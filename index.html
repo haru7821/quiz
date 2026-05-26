@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>생명과학 퀴즈 — 고2 생명과학Ⅰ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #07080f;
+    --surface: #0e1020;
+    --card: #13162a;
+    --card-hover: #181c33;
+    --border: rgba(255,255,255,0.07);
+    --border-active: rgba(0,224,175,0.5);
+    --accent: #00e0af;
+    --accent2: #4f8eff;
+    --accent3: #ff6b6b;
+    --success: #00e0af;
+    --error: #ff5c72;
+    --text: #e8eaf6;
+    --text-muted: #7880a8;
+    --text-dim: #3d4468;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 80% 60% at 15% 10%, rgba(0,224,175,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 85% 90%, rgba(79,142,255,0.06) 0%, transparent 60%);
+  }
+
+  /* ── GRID BG ── */
+  body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  #app {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center;
+    padding: 0 16px 60px;
+  }
+
+  /* ── HEADER ── */
+  .site-header {
+    width: 100%; max-width: 860px;
+    padding: 28px 0 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none;
+  }
+
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .logo-text {
+    font-size: 15px; font-weight: 700; letter-spacing: 0.02em;
+    color: var(--text);
+  }
+
+  .logo-sub {
+    font-size: 11px; font-weight: 400; color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ── VIEWS ── */
+  .view { width: 100%; max-width: 860px; display: none; }
+  .view.active { display: block; animation: fadeUp 0.4s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── HOME VIEW ── */
+  .hero {
+    text-align: center;
+    padding: 48px 0 40px;
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(0,224,175,0.1);
+    border: 1px solid rgba(0,224,175,0.25);
+    border-radius: 100px;
+    padding: 4px 14px;
+    font-size: 12px; font-weight: 500;
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 20px;
+    letter-spacing: 0.05em;
+  }
+
+  .hero-title {
+    font-size: clamp(28px, 6vw, 52px);
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  .hero-title span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-desc {
+    font-size: 16px; color: var(--text-muted); font-weight: 300;
+    max-width: 420px; margin: 0 auto 40px;
+    line-height: 1.7;
+  }
+
+  .stats-row {
+    display: flex; justify-content: center; gap: 32px;
+    margin-bottom: 48px;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-size: 28px; font-weight: 900;
+    font-family: 'Space Mono', monospace;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stat-label {
+    font-size: 12px; color: var(--text-muted); font-weight: 400;
+    margin-top: 2px;
+  }
+
+  /* ── UNIT GRID ── */
+  .section-title {
+    font-size: 13px; font-weight: 700;
+    color: var(--text-muted); letter-spacing: 0.12em;
+    text-transform: uppercase; font-family: 'Space Mono', monospace;
+    margin-bottom: 16px;
+  }
+
+  .unit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .unit-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .unit-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+
+  .unit-card:hover {
+    background: var(--card-hover);
+    border-color: rgba(0,224,175,0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+
+  .unit-card:hover::before { transform: scaleX(1); }
+
+  .unit-card.selected {
+    background: rgba(0,224,175,0.08);
+    border-color: var(--accent);
+    box-shadow: 0 0 20px rgba(0,224,175,0.12);
+  }
+
+  .unit-card.selected::before { transform: scaleX(1); }
+
+  .unit-num {
+    font-size: 11px; font-weight: 700;
+    color: var(--accent); font-family: 'Space Mono', monospace;
+    letter-spacing: 0.05em; margin-bottom: 8px;
+  }
+
+  .unit-name {
+    font-size: 14px; font-weight: 700; line-height: 1.4;
+    margin-bottom: 8px;
+  }
+
+  .unit-count {
+    font-size: 12px; color: var(--text-muted);
+  }
+
+  .unit-check {
+    position: absolute; top: 14px; right: 14px;
+    width: 20px; height: 20px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: #000; font-weight: 900;
+    opacity: 0; transform: scale(0.5);
+    transition: all 0.2s ease;
+  }
+
+  .unit-card.selected .unit-check {
+    opacity: 1; transform: scale(1);
+  }
+
+  /* ALL/CLEAR buttons */
+  .select-actions {
+    display: flex; gap: 8px; margin-bottom: 24px;
+  }
+
+  .btn-secondary {
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    background: transparent;
+    border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+
+  .btn-secondary:hover {
+    border-color: rgba(255,255,255,0.2);
+    color: var(--text);
+    background: rgba(255,255,255,0.05);
+  }
+
+  /* ── PRIMARY BTN ── */
+  .btn-primary {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; padding: 18px;
+    background: linear-gradient(135deg, var(--accent) 0%, #00bfa3 100%);
+    border: none; border-radius: var(--radius);
+    font-size: 16px; font-weight: 700;
+    color: #07080f;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Noto Sans KR', sans-serif;
+    letter-spacing: 0.02em;
+    max-width: 860px;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0,224,175,0.3);
+    background: linear-gradient(135deg, #00f5c0, var(--accent));
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.3; cursor: not-allowed;
+    transform: none; box-shadow: none;
+  }
+
+  .btn-arrow { font-size: 20px; transition: transform 0.2s; }
+  .btn-primary:hover .btn-arrow { transform: translateX(4px); }
+
+  /* ── QUIZ VIEW ── */
+  .quiz-header {
+    padding: 20px 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px;
+  }
+
+  .quiz-back {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--text-muted);
+    cursor: pointer; border: none; background: transparent;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: color 0.2s;
+    padding: 6px 0;
+  }
+
+  .quiz-back:hover { color: var(--text); }
+
+  .quiz-meta {
+    display: flex; align-items: center; gap: 16px;
+  }
+
+  .quiz-counter {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; color: var(--text-muted);
+  }
+
+  .quiz-counter span { color: var(--accent); font-weight: 700; }
+
+  .timer-badge {
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 5px 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; color: var(--text);
+  }
+
+  .timer-badge.warning { border-color: rgba(255,107,107,0.4); color: #ff6b6b; }
+  .timer-badge .timer-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 1s infinite; }
+  .timer-badge.warning .timer-dot { background: #ff6b6b; }
+
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* progress */
+  .progress-track {
+    width: 100%; height: 3px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  /* Question */
+  .q-unit-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(79,142,255,0.1);
+    border: 1px solid rgba(79,142,255,0.25);
+    border-radius: 100px;
+    padding: 4px 12px;
+    font-size: 12px; color: var(--accent2);
+    font-weight: 500; margin-bottom: 16px;
+  }
+
+  .q-text {
+    font-size: clamp(17px, 3.5vw, 21px);
+    font-weight: 700;
+    line-height: 1.55;
+    margin-bottom: 28px;
+  }
+
+  /* Options */
+  .options-list {
+    display: flex; flex-direction: column; gap: 10px;
+    margin-bottom: 32px;
+  }
+
+  .option-btn {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 16px 18px;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-align: left;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--text);
+    font-size: 15px; line-height: 1.5; font-weight: 400;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .option-btn::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(0,224,175,0.04));
+    opacity: 0; transition: opacity 0.2s;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    border-color: rgba(0,224,175,0.4);
+    background: var(--card-hover);
+    transform: translateX(3px);
+  }
+
+  .option-btn:hover:not(:disabled)::before { opacity: 1; }
+
+  .option-num {
+    min-width: 26px; height: 26px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+    flex-shrink: 0;
+    transition: all 0.18s;
+    margin-top: 1px;
+  }
+
+  .option-btn:hover:not(:disabled) .option-num {
+    background: rgba(0,224,175,0.2);
+    color: var(--accent);
+  }
+
+  /* Answer states */
+  .option-btn.correct {
+    border-color: var(--success);
+    background: rgba(0,224,175,0.08);
+    pointer-events: none;
+  }
+
+  .option-btn.correct .option-num {
+    background: var(--success);
+    color: #000;
+  }
+
+  .option-btn.wrong {
+    border-color: var(--error);
+    background: rgba(255,92,114,0.06);
+    pointer-events: none;
+  }
+
+  .option-btn.wrong .option-num {
+    background: var(--error);
+    color: #fff;
+  }
+
+  .option-btn.neutral { pointer-events: none; opacity: 0.5; }
+
+  /* Explanation box */
+  .explain-box {
+    background: rgba(0,224,175,0.05);
+    border: 1px solid rgba(0,224,175,0.2);
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.3s ease;
+    display: none;
+  }
+
+  .explain-box.show { display: block; }
+
+  .explain-label {
+    font-size: 11px; font-weight: 700;
+    color: var(--accent); font-family: 'Space Mono', monospace;
+    letter-spacing: 0.08em; margin-bottom: 8px;
+  }
+
+  .explain-text {
+    font-size: 14px; color: var(--text-muted); line-height: 1.65;
+  }
+
+  /* Next btn */
+  .btn-next {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 16px;
+    background: var(--accent);
+    border: none; border-radius: var(--radius-sm);
+    font-size: 15px; font-weight: 700;
+    color: #07080f; cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Noto Sans KR', sans-serif;
+    display: none;
+  }
+
+  .btn-next.show { display: flex; }
+  .btn-next:hover { background: #00f5c0; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,224,175,0.25); }
+
+  /* ── RESULT VIEW ── */
+  .result-header {
+    text-align: center;
+    padding: 48px 0 32px;
+  }
+
+  .result-grade {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 32px; font-weight: 900;
+    font-family: 'Space Mono', monospace;
+    position: relative;
+  }
+
+  .result-grade::before {
+    content: ''; position: absolute; inset: -3px;
+    border-radius: 50%;
+    background: conic-gradient(var(--accent) calc(var(--pct) * 1%), var(--surface) 0);
+    z-index: -1;
+  }
+
+  .result-grade::after {
+    content: ''; position: absolute; inset: 3px;
+    border-radius: 50%; background: var(--bg); z-index: -1;
+  }
+
+  .result-score-big {
+    font-size: clamp(42px, 9vw, 68px);
+    font-weight: 900;
+    font-family: 'Space Mono', monospace;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+
+  .result-label {
+    font-size: 18px; font-weight: 700; margin-bottom: 8px;
+  }
+
+  .result-sub {
+    font-size: 14px; color: var(--text-muted);
+  }
+
+  /* score cards */
+  .result-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    text-align: center;
+  }
+
+  .stat-card-num {
+    font-size: 24px; font-weight: 900;
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 4px;
+  }
+
+  .stat-card-num.green { color: var(--accent); }
+  .stat-card-num.red { color: var(--error); }
+  .stat-card-num.blue { color: var(--accent2); }
+
+  .stat-card-label {
+    font-size: 12px; color: var(--text-muted);
+  }
+
+  /* Review list */
+  .review-section { margin-bottom: 32px; }
+
+  .review-title {
+    font-size: 13px; font-weight: 700;
+    color: var(--text-muted); letter-spacing: 0.12em;
+    text-transform: uppercase; font-family: 'Space Mono', monospace;
+    margin-bottom: 12px;
+  }
+
+  .review-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    font-size: 14px; line-height: 1.6;
+  }
+
+  .review-item-q {
+    font-weight: 600; margin-bottom: 6px;
+  }
+
+  .review-item-row {
+    display: flex; gap: 12px; font-size: 13px;
+  }
+
+  .ri-wrong { color: var(--error); }
+  .ri-correct { color: var(--accent); }
+
+  /* restart btns */
+  .result-actions {
+    display: flex; gap: 10px; flex-direction: column;
+  }
+
+  .btn-outline {
+    padding: 14px;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 15px; font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+
+  .btn-outline:hover {
+    border-color: rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.04);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .unit-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .unit-card { padding: 14px; }
+    .unit-name { font-size: 12px; }
+    .unit-count { font-size: 11px; }
+    .stats-row { gap: 20px; }
+    .result-stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .stat-card { padding: 12px 8px; }
+    .stat-card-num { font-size: 20px; }
+    .quiz-header { padding: 14px 0 18px; }
+    .timer-badge { padding: 4px 9px; font-size: 12px; }
+  }
+
+  @media (max-width: 360px) {
+    .unit-grid { grid-template-columns: 1fr; }
+    .result-stats { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* ── AI MODAL ── */
+  /* feedback flash */
+  @keyframes flashGreen {
+    0% { background: rgba(0,224,175,0.25); }
+    100% { background: transparent; }
+  }
+  @keyframes flashRed {
+    0% { background: rgba(255,92,114,0.25); }
+    100% { background: transparent; }
+  }
+
+  .flash-correct { animation: flashGreen 0.5s ease; }
+  .flash-wrong { animation: flashRed 0.5s ease; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="logo">
+      <div class="logo-icon">🧬</div>
+      <div>
+        <div class="logo-text">생명과학 퀴즈</div>
+        <div class="logo-sub">고2 생명과학Ⅰ</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── VIEW: HOME ── -->
+  <div id="view-home" class="view active">
+    <div class="hero">
+      <div class="hero-badge">📚 요점정리 기반 퀴즈</div>
+      <h1 class="hero-title">생명과학<span>Ⅰ</span><br>완전정복 퀴즈</h1>
+      <p class="hero-desc">단원을 선택하고 퀴즈를 풀어보세요.<br>취약한 단원을 집중적으로 학습할 수 있습니다.</p>
+      <div class="stats-row">
+        <div class="stat-item"><div class="stat-num">11</div><div class="stat-label">단원</div></div>
+        <div class="stat-item"><div class="stat-num">220</div><div class="stat-label">문제</div></div>
+        <div class="stat-item"><div class="stat-num">30s</div><div class="stat-label">문제당 시간</div></div>
+      </div>
+    </div>
+
+    <div class="section-title">단원 선택</div>
+
+    <div class="select-actions">
+      <button class="btn-secondary" onclick="selectAll()">전체 선택</button>
+      <button class="btn-secondary" onclick="clearAll()">전체 해제</button>
+    </div>
+
+    <div class="unit-grid" id="unit-grid"></div>
+
+    <button class="btn-primary" id="start-btn" onclick="startQuiz()" disabled>
+      퀴즈 시작하기 <span class="btn-arrow">→</span>
+    </button>
+  </div>
+
+  <!-- ── VIEW: QUIZ ── -->
+  <div id="view-quiz" class="view">
+    <div class="quiz-header">
+      <button class="quiz-back" onclick="goHome()">← 단원 선택</button>
+      <div class="quiz-meta">
+        <span class="quiz-counter"><span id="q-current">1</span> / <span id="q-total">0</span></span>
+        <div class="timer-badge" id="timer-badge">
+          <div class="timer-dot"></div>
+          <span id="timer-display">30</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+
+    <div class="q-unit-tag" id="q-unit-tag">단원</div>
+    <div class="q-text" id="q-text">문제가 여기에 표시됩니다.</div>
+
+    <div class="options-list" id="options-list"></div>
+
+    <div class="explain-box" id="explain-box">
+      <div class="explain-label">해설</div>
+      <div class="explain-text" id="explain-text"></div>
+    </div>
+
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">
+      다음 문제 →
+    </button>
+  </div>
+
+  <!-- ── VIEW: RESULT ── -->
+  <div id="view-result" class="view">
+    <div class="result-header">
+      <div class="result-score-big" id="result-score">0점</div>
+      <div class="result-label" id="result-label">잘했어요!</div>
+      <div class="result-sub" id="result-sub">계속 열심히 하세요</div>
+    </div>
+
+    <div class="result-stats">
+      <div class="stat-card">
+        <div class="stat-card-num green" id="res-correct">0</div>
+        <div class="stat-card-label">정답</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-num red" id="res-wrong">0</div>
+        <div class="stat-card-label">오답</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-num blue" id="res-time">0s</div>
+        <div class="stat-card-label">총 시간</div>
+      </div>
+    </div>
+
+    <div class="review-section" id="review-section"></div>
+
+    <div class="result-actions">
+      <button class="btn-primary" onclick="retryQuiz()">같은 단원 다시 풀기 ↺</button>
+      <button class="btn-outline" onclick="goHome()">다른 단원 선택하기</button>
+    </div>
+  </div>
+
+
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  QUIZ DATA — PDF 기반 생명과학Ⅰ 문제
+// ══════════════════════════════════════════
+
+const UNITS = [
+  {
+    id: 1, name: '생명 과학의 이해', short: '1단원',
+    questions: [
+      { q: '다음 중 생물의 특성에 해당하지 않는 것은?', opts: ['세포로 구성되어 있다', '물질대사를 통해 에너지를 얻는다', '결정체 형태로 존재한다', '자극에 대해 반응하며 항상성을 유지한다'], ans: 2, exp: '결정체 형태로 존재하는 것은 바이러스의 비생물적 특성입니다. 생물은 세포로 구성되며 물질대사, 반응, 항상성 등의 특성을 가집니다.' },
+      { q: '바이러스의 비생물적 특성으로 옳은 것은?', opts: ['유전 물질인 핵산을 가진다', '숙주 세포 안에서 증식한다', '세포로 이루어져 있지 않고 스스로 물질대사를 할 수 없다', '돌연변이가 일어나 진화한다'], ans: 2, exp: '바이러스는 세포로 구성되지 않으며, 숙주 세포 밖에서는 스스로 물질대사를 할 수 없는 비생물적 특성을 나타냅니다.' },
+      { q: '연역적 탐구 방법에서 반드시 필요한 단계는?', opts: ['단순 관찰만으로 결론 도출', '가설 설정 후 대조 실험으로 검증', '결론을 먼저 설정 후 관찰', '가설 없이 자료 수집만 진행'], ans: 1, exp: '연역적 탐구 방법은 관찰 → 문제 인식 → 가설 설정 → 탐구 설계(대조 실험) → 결과 분석 → 결론 도출의 순서로 진행됩니다.' },
+      { q: '대조 실험에서 "조작 변인"에 대한 설명으로 옳은 것은?', opts: ['대조군과 실험군 모두 일정하게 유지하는 변인', '실험군에서 의도적으로 변화시키는 변인', '조작 변인의 영향을 받아 측정되는 값', '관찰을 통해 자연스럽게 변하는 값'], ans: 1, exp: '조작 변인은 대조군과 달리 실험군에서 의도적으로 변화시키는 변인입니다. 통제 변인은 일정하게 유지하는 변인, 종속 변인은 측정되는 값입니다.' },
+      { q: '항상성(Homeostasis)의 정의로 가장 옳은 것은?', opts: ['생물이 자신과 닮은 자손을 만드는 과정', '체내외 환경 변화에 대해 체내 환경을 정상 범위로 유지하는 성질', '생물이 세포 분열을 통해 생장하는 과정', '유전 물질이 자손에게 전달되는 현상'], ans: 1, exp: '항상성은 체내외 환경이 변화해도 생물체가 체내 환경(체온, 혈당 등)을 정상 범위로 유지하려는 성질입니다.' },
+      { q: '귀납적 탐구 방법의 특징으로 옳은 것은?', opts: ['가설을 먼저 설정한다', '반복 관찰로 규칙성을 발견해 결론을 이끌어낸다', '대조 실험이 필수적이다', '연역적 방법보다 정확하다'], ans: 1, exp: '귀납적 탐구 방법은 여러 사례를 반복 관찰하여 공통된 규칙을 발견하고 일반화하는 방법입니다. 가설 설정이 필요 없습니다.' },
+      { q: '세포설의 내용으로 옳지 않은 것은?', opts: ['모든 생물은 세포로 이루어져 있다', '세포는 생명의 구조적·기능적 단위이다', '새로운 세포는 기존 세포에서 생겨난다', '세포는 스스로 물질대사를 하지 못한다'], ans: 3, exp: '세포는 물질대사를 하는 생명의 기본 단위입니다. 세포설의 핵심은 모든 생물이 세포로 구성되고, 새 세포는 기존 세포에서 만들어진다는 것입니다.' },
+      { q: '생물의 특성 중 "발생과 생장"에 해당하는 예시로 옳은 것은?', opts: ['지렁이가 빛을 피한다', '수정란이 세포 분열을 통해 성체가 된다', '식물이 광합성으로 포도당을 만든다', '박테리아가 항생제에 내성이 생긴다'], ans: 1, exp: '발생과 생장은 수정란이 세포 분열과 분화를 거쳐 성체로 되는 과정입니다. 지렁이의 빛 회피는 반응, 광합성은 물질대사, 항생제 내성은 진화입니다.' },
+      { q: '생물의 특성 중 "적응과 진화"의 예시로 가장 적절한 것은?', opts: ['체온이 36.5℃로 유지된다', '뼈가 부러진 후 새로운 뼈로 회복된다', '북극곰의 털이 흰색이어서 눈밭에서 보호색이 된다', '아메바가 위족으로 먹이를 잡아 소화한다'], ans: 2, exp: '적응과 진화는 오랜 세월 환경에 맞게 유리한 형질이 선택·유지되는 것입니다. 북극곰의 흰 털은 자연선택의 결과입니다.' },
+      { q: '다음 중 물질대사에 해당하지 않는 것은?', opts: ['미토콘드리아에서 ATP를 생성한다', '엽록체에서 포도당을 합성한다', '심장이 수축·이완을 반복한다', '간에서 알코올을 분해한다'], ans: 2, exp: '물질대사는 생물체 내에서 일어나는 화학 반응입니다. 심장의 수축·이완은 물질대사가 아닌 생리적 운동입니다.' },
+      { q: '바이러스가 생물적 특성을 나타내는 경우는?', opts: ['단백질 껍질만으로 존재할 때', '숙주 세포 내에서 복제될 때', '결정체 형태로 장기 보관될 때', '세포막 없이 핵산만 존재할 때'], ans: 1, exp: '바이러스는 숙주 세포 안에서만 증식(생식)하고 돌연변이를 통해 진화하는 생물적 특성을 보입니다.' },
+      { q: '종속 변인에 대한 설명으로 옳은 것은?', opts: ['실험자가 의도적으로 다르게 한 변인', '실험 결과로 측정·관찰되는 변인', '실험군과 대조군 모두 같게 유지하는 변인', '실험과 관계없이 변하는 변인'], ans: 1, exp: '종속 변인은 조작 변인의 영향을 받아 나타나는 결과 값으로 측정·관찰 대상입니다.' },
+      { q: '대조군의 역할로 가장 옳은 것은?', opts: ['실험에서 가설을 설정하는 기준', '실험군 결과를 비교하는 기준 집단', '조작 변인을 변화시키는 집단', '실험 결과를 무효로 만드는 집단'], ans: 1, exp: '대조군은 조작 변인을 가하지 않은 집단으로, 실험군의 결과를 비교·검증하는 기준이 됩니다.' },
+      { q: '왓슨과 크릭이 밝혀낸 생명과학적 성과는?', opts: ['세포설 주창', 'DNA 이중나선 구조 규명', '자연선택설 제안', '페니실린 발견'], ans: 1, exp: '1953년 왓슨과 크릭은 X선 회절 자료를 바탕으로 DNA의 이중나선 구조를 밝혀냈습니다.' },
+      { q: '생명 현상의 특성 중 "생식"에 해당하는 예로 옳은 것은?', opts: ['효모가 출아법으로 자손을 만든다', '식물이 빛을 향해 자란다', '사람이 체온을 유지한다', '동물이 먹이를 잡아 에너지를 얻는다'], ans: 0, exp: '생식은 자신과 닮은 자손을 만드는 것입니다. 효모의 출아법은 무성생식의 예입니다.' },
+      { q: '다음 중 생물과 무생물의 공통점으로 옳은 것은?', opts: ['유전 물질을 가진다', '물질과 에너지로 구성된다', '세포로 이루어져 있다', '물질대사를 한다'], ans: 1, exp: '생물과 무생물 모두 물질과 에너지로 이루어져 있습니다. 유전 물질, 세포, 물질대사는 생물만의 특징입니다.' },
+      { q: '플레밍이 페니실린을 발견한 탐구 방법은?', opts: ['연역적 탐구', '귀납적 탐구', '가설-연역법', '통제 실험'], ans: 1, exp: '플레밍은 우연한 관찰(곰팡이 주변 세균 사멸)에서 규칙성을 발견한 귀납적 탐구 방법으로 페니실린을 발견했습니다.' },
+      { q: '생물의 구성 단계를 작은 것부터 순서대로 나열한 것은?', opts: ['세포→조직→기관→기관계→개체', '조직→세포→기관→기관계→개체', '세포→기관→조직→기관계→개체', '기관→조직→세포→개체→기관계'], ans: 0, exp: '생물의 구성 단계: 세포 → 조직 → 기관 → 기관계 → 개체 순서입니다.' },
+      { q: '자극과 반응의 예로 옳지 않은 것은?', opts: ['파리지옥이 곤충을 잡는다', '해바라기가 태양을 향해 자란다', '강아지가 훈련으로 특기를 익힌다', '땅콩이 발아하여 줄기와 잎이 자란다'], ans: 3, exp: '땅콩의 발아와 생장은 발생과 생장에 해당합니다. 자극과 반응은 환경 변화에 즉각적으로 반응하는 것입니다.' },
+      { q: '생명과학의 탐구 과정에서 "가설"에 대한 설명으로 옳은 것은?', opts: ['실험 결과 후에 설정하는 예측', '문제에 대한 잠정적인 답으로 검증 가능해야 한다', '반드시 옳아야 하는 과학적 사실', '귀납적 탐구에서만 필요한 단계'], ans: 1, exp: '가설은 문제에 대한 잠정적인 답이며, 실험으로 검증 가능해야 합니다. 틀려도 되지만 반드시 검증 가능해야 합니다.' }
+    ]
+  },
+  {
+    id: 2, name: '생명 활동과 에너지', short: '2단원',
+    questions: [
+      { q: 'ATP에 대한 설명으로 옳은 것은?', opts: ['ATP는 에너지를 흡수할 때 ADP와 인산으로 분해된다', 'ATP → ADP + 무기 인산 반응 시 에너지가 방출된다', 'ADP는 세포 호흡 시 ATP를 분해하여 생성된다', 'ATP는 4개의 인산기로 구성된 분자이다'], ans: 1, exp: 'ATP는 고에너지 인산 결합이 끊어지면 ADP와 무기 인산으로 분해되면서 에너지가 방출됩니다.' },
+      { q: '동화 작용의 예시로 옳은 것은?', opts: ['세포 호흡 — 포도당을 CO₂와 H₂O로 분해', '소화 — 단백질을 아미노산으로 분해', '광합성 — CO₂와 H₂O로 포도당을 합성', '지방 분해 — 지방산과 글리세롤로 분해'], ans: 2, exp: '동화 작용은 작은 물질을 큰 물질로 합성하며 에너지를 흡수하는 과정입니다. 광합성이 대표적입니다.' },
+      { q: '사람의 소화계에서 소화액을 분비하는 소화샘이 아닌 것은?', opts: ['침샘', '이자', '소장 벽 자체', '위샘'], ans: 2, exp: '소화샘은 침샘, 위샘, 간, 쓸개, 이자가 해당됩니다. 소장은 소화관에 해당하며 소화샘이 아닙니다.' },
+      { q: '폐순환의 경로로 올바른 것은?', opts: ['좌심실 → 대동맥 → 온몸 → 우심방', '우심실 → 폐동맥 → 폐포 모세혈관 → 폐정맥 → 좌심방', '우심방 → 폐 → 좌심실', '좌심방 → 폐동맥 → 폐 → 우심방'], ans: 1, exp: '폐순환: 우심실 → 폐동맥 → 폐포의 모세혈관 → 폐정맥 → 좌심방.' },
+      { q: '세포 호흡에서 생성되지 않는 물질은?', opts: ['이산화탄소(CO₂)', '물(H₂O)', 'ATP', '글리코겐(녹말)'], ans: 3, exp: '세포 호흡은 포도당을 분해하여 CO₂, H₂O, ATP를 생성합니다. 글리코겐은 포도당의 저장 형태로 세포 호흡의 산물이 아닙니다.' },
+      { q: 'ATP의 구조를 올바르게 설명한 것은?', opts: ['아데닌 + 디옥시리보스 + 인산기 3개', '아데닌 + 리보스 + 인산기 3개', '구아닌 + 리보스 + 인산기 2개', '티민 + 리보스 + 인산기 3개'], ans: 1, exp: 'ATP(아데노신 삼인산)는 아데닌 + 리보스(5탄당) + 인산기 3개로 구성됩니다.' },
+      { q: '세포 호흡의 3단계 순서로 올바른 것은?', opts: ['해당과정 → 전자전달계 → TCA 회로', '해당과정 → TCA 회로 → 전자전달계', 'TCA 회로 → 해당과정 → 전자전달계', '전자전달계 → 해당과정 → TCA 회로'], ans: 1, exp: '세포 호흡: 해당과정(세포질) → TCA 회로(미토콘드리아 기질) → 전자전달계(미토콘드리아 내막) 순서입니다.' },
+      { q: '소화 효소 아밀라아제가 분해하는 영양소는?', opts: ['단백질', '지방', '탄수화물(녹말)', '핵산'], ans: 2, exp: '아밀라아제는 침과 이자액에 포함된 효소로 녹말(탄수화물)을 엿당으로 분해합니다.' },
+      { q: '폐포에서의 기체 교환에 대한 설명으로 옳은 것은?', opts: ['O₂는 혈액에서 폐포로, CO₂는 폐포에서 혈액으로 이동한다', 'O₂는 폐포에서 혈액으로, CO₂는 혈액에서 폐포로 이동한다', '기체 교환은 능동 수송으로 일어난다', 'O₂와 CO₂ 모두 폐포에서 혈액으로 이동한다'], ans: 1, exp: '폐포에서 O₂ 분압이 높고 CO₂ 분압이 낮아, O₂는 폐포→혈액, CO₂는 혈액→폐포로 확산됩니다.' },
+      { q: '혈액의 구성 요소 중 산소 운반 역할을 하는 것은?', opts: ['혈소판', '백혈구', '혈장', '적혈구'], ans: 3, exp: '적혈구는 헤모글로빈을 포함하여 산소를 운반합니다. 혈소판은 지혈, 백혈구는 면역, 혈장은 영양소·노폐물 운반을 담당합니다.' },
+      { q: '이화 작용의 특징으로 옳은 것은?', opts: ['에너지를 흡수하는 반응이다', '작은 분자를 큰 분자로 합성한다', '복잡한 물질을 간단한 물질로 분해하며 에너지를 방출한다', '광합성이 대표적인 예이다'], ans: 2, exp: '이화 작용은 복잡한 물질을 간단하게 분해하며 에너지를 방출합니다. 세포 호흡이 대표적인 예입니다.' },
+      { q: '심장의 4개 방 중 온몸으로 산소가 풍부한 혈액을 내보내는 곳은?', opts: ['우심방', '우심실', '좌심방', '좌심실'], ans: 3, exp: '좌심실은 가장 두꺼운 근육벽을 가지며, 폐에서 산소를 받아 온 혈액을 대동맥을 통해 온몸으로 내보냅니다.' },
+      { q: '위에서 분비되는 소화 효소는?', opts: ['아밀라아제', '펩신', '라이페이스', '트립신'], ans: 1, exp: '펩신은 위에서 분비되며 단백질을 폴리펩타이드로 분해합니다. 아밀라아제는 침/이자, 라이페이스는 이자, 트립신은 이자에서 분비됩니다.' },
+      { q: '소장에서 지방이 흡수될 때 이용하는 경로는?', opts: ['모세혈관 → 간문맥 → 간', '암죽관(림프관) → 림프관 → 혈액', '모세혈관 → 심장 → 폐', '대장 → 혈액'], ans: 1, exp: '지방은 소화 후 지방산과 모노글리세리드로 분해되어 소장 융털의 암죽관(림프관)으로 흡수됩니다.' },
+      { q: '광합성에서 명반응이 일어나는 장소는?', opts: ['엽록체 스트로마', '엽록체 틸라코이드 막', '미토콘드리아 내막', '세포질'], ans: 1, exp: '명반응은 빛에너지를 이용해 ATP와 NADPH를 생성하며 엽록체의 틸라코이드 막에서 일어납니다.' },
+      { q: '혈소판의 주요 기능은?', opts: ['산소 운반', '면역 반응', '혈액 응고(지혈)', '영양소 운반'], ans: 2, exp: '혈소판은 혈관이 손상될 때 혈액이 굳도록 돕는 혈액 응고(지혈) 역할을 합니다.' },
+      { q: 'ADP가 ATP로 합성될 때의 설명으로 옳은 것은?', opts: ['에너지가 방출된다', '인산기 하나가 떨어진다', '에너지가 흡수되어 고에너지 인산 결합이 형성된다', '아데닌이 분해된다'], ans: 2, exp: 'ADP + 무기인산 + 에너지 → ATP. 에너지가 흡수되어 고에너지 인산 결합이 형성됩니다.' },
+      { q: '소화 산물이 흡수되는 주된 기관은?', opts: ['위', '대장', '소장', '식도'], ans: 2, exp: '소장의 융털에는 모세혈관과 암죽관이 있어 소화된 영양소(포도당, 아미노산, 지방산 등)가 주로 흡수됩니다.' },
+      { q: '세포 호흡이 주로 일어나는 세포 소기관은?', opts: ['핵', '리보솜', '미토콘드리아', '엽록체'], ans: 2, exp: '미토콘드리아는 세포 호흡(TCA 회로, 전자전달계)이 일어나 ATP를 대량 생산하는 에너지 공장입니다.' },
+      { q: '체순환의 경로로 옳은 것은?', opts: ['우심실 → 폐동맥 → 폐 → 좌심방', '좌심실 → 대동맥 → 온몸 → 대정맥 → 우심방', '좌심방 → 대동맥 → 온몸 → 우심실', '우심방 → 대동맥 → 온몸 → 좌심방'], ans: 1, exp: '체순환: 좌심실 → 대동맥 → 온몸 → 대정맥 → 우심방. 온몸에 산소를 공급하고 이산화탄소를 회수합니다.' }
+    ]
+  },
+  {
+    id: 3, name: '노폐물의 배설', short: '3단원',
+    questions: [
+      { q: '단백질이 분해될 때만 생성되는 질소성 노폐물은?', opts: ['이산화탄소', '물', '암모니아', '젖산'], ans: 2, exp: '단백질은 탄소, 수소, 산소, 질소로 구성되므로 세포 호흡 시 이산화탄소, 물 외에 암모니아(NH₃)가 생성됩니다.' },
+      { q: '네프론(nephron)의 구성 요소가 아닌 것은?', opts: ['사구체', '보먼주머니', '세뇨관', '오줌관'], ans: 3, exp: '네프론은 사구체 + 보먼주머니 + 세뇨관으로 구성됩니다. 오줌관은 네프론의 구성 요소가 아닙니다.' },
+      { q: '오줌의 생성 경로로 옳은 것은?', opts: ['보먼주머니 → 사구체 → 세뇨관', '사구체 → 보먼주머니 → 세뇨관 → 콩팥 깔때기', '세뇨관 → 보먼주머니 → 사구체', '콩팥 깔때기 → 세뇨관 → 보먼주머니'], ans: 1, exp: '오줌 생성 경로: 사구체(여과) → 보먼주머니 → 세뇨관(재흡수·분비) → 콩팥 깔때기 → 오줌관 → 방광' },
+      { q: '이산화탄소가 주로 배출되는 기관은?', opts: ['콩팥', '폐', '간', '대장'], ans: 1, exp: '이산화탄소는 주로 폐를 통해 날숨으로 배출됩니다.' },
+      { q: '지방의 세포 호흡 시 생성되는 노폐물로 옳은 것은?', opts: ['이산화탄소, 물, 암모니아', '이산화탄소와 물만', '암모니아만', '요산만'], ans: 1, exp: '지방은 탄소, 수소, 산소로만 구성되어 있으므로 세포 호흡 시 이산화탄소(CO₂)와 물(H₂O)만 생성됩니다.' },
+      { q: '사구체에서 보먼주머니로의 여과에 대한 설명으로 옳은 것은?', opts: ['능동 수송으로 선택적으로 일어난다', '혈압에 의한 여과압으로 일어난다', '분자량이 큰 단백질도 여과된다', '여과액은 오줌과 성분이 같다'], ans: 1, exp: '여과는 사구체의 높은 혈압에 의한 여과압으로 일어납니다. 단백질·혈구처럼 큰 물질은 여과되지 않습니다.' },
+      { q: '세뇨관에서 재흡수되는 물질로 옳지 않은 것은?', opts: ['포도당', '물', '아미노산', '요소(전량)'], ans: 3, exp: '포도당, 아미노산, 물, 무기염류 등은 재흡수되지만, 요소는 일부만 재흡수되고 대부분 오줌으로 배출됩니다.' },
+      { q: '암모니아(NH₃)가 요소로 전환되는 기관은?', opts: ['콩팥', '폐', '간', '이자'], ans: 2, exp: '간에서 암모니아(독성 강함)를 요소(독성 약함)로 전환합니다. 요소는 이후 콩팥에서 걸러져 오줌으로 배출됩니다.' },
+      { q: '오줌의 농도를 조절하는 호르몬은?', opts: ['인슐린', '항이뇨호르몬(ADH)', '에피네프린', '갑상샘 호르몬'], ans: 1, exp: '항이뇨호르몬(ADH)은 뇌하수체에서 분비되어 세뇨관과 집합관에서 물의 재흡수를 촉진해 오줌을 농축시킵니다.' },
+      { q: '콩팥의 구조 중 여과가 일어나는 곳은?', opts: ['세뇨관', '집합관', '사구체', '콩팥 깔때기'], ans: 2, exp: '사구체는 모세혈관 덩어리로, 혈압에 의해 혈액 성분이 보먼주머니로 여과됩니다.' },
+      { q: '땀에 포함된 성분으로 옳은 것은?', opts: ['포도당과 단백질', '요소와 물과 무기염류', '지방산과 암모니아', '혈구와 혈장 단백질'], ans: 1, exp: '땀은 땀샘에서 분비되며 물, 무기염류(NaCl), 소량의 요소를 포함합니다. 체온 조절과 노폐물 배출 기능을 합니다.' },
+      { q: '혈액 속 요소 농도가 높아졌을 때 콩팥의 반응으로 옳은 것은?', opts: ['여과량을 줄인다', '더 많은 요소를 오줌으로 배출한다', '요소를 세뇨관에서 재흡수한다', 'ADH 분비를 억제한다'], ans: 1, exp: '혈중 요소 농도가 높아지면 콩팥에서 여과와 배출을 통해 오줌으로 요소를 내보내 혈중 농도를 낮춥니다.' },
+      { q: '탄수화물 분해 시 생성되는 노폐물은?', opts: ['이산화탄소, 물, 암모니아', '이산화탄소와 물', '암모니아와 요소', '요산'], ans: 1, exp: '탄수화물은 탄소, 수소, 산소로 구성되어 있어 분해 시 이산화탄소와 물만 생성됩니다.' },
+      { q: '방광의 기능으로 옳은 것은?', opts: ['오줌을 생성한다', '오줌을 일시 저장한 후 배출한다', '요소를 합성한다', '물을 재흡수한다'], ans: 1, exp: '방광은 오줌을 일시적으로 저장하였다가 요도를 통해 몸 밖으로 배출하는 역할을 합니다.' },
+      { q: '오줌에 포도당이 검출되는 경우는?', opts: ['사구체 여과 기능 저하', '세뇨관의 포도당 재흡수 기능 이상', '물 재흡수 촉진', '요소 생성 증가'], ans: 1, exp: '정상적으로 포도당은 세뇨관에서 100% 재흡수됩니다. 당뇨병이나 재흡수 장애 시 오줌에 포도당이 나타납니다.' },
+      { q: '콩팥이 제거되어도 당장 생존 가능한 이유와 관련이 없는 것은?', opts: ['투석(혈액 투석)으로 대체 가능', '이자가 노폐물 처리', '콩팥 이식으로 대체 가능', '인공 콩팥으로 유지'], ans: 1, exp: '이자는 소화효소와 호르몬을 분비하는 기관으로 노폐물 처리 역할을 하지 않습니다.' },
+      { q: '사람의 배설 기관에 해당하지 않는 것은?', opts: ['콩팥', '폐', '간', '소장'], ans: 3, exp: '소장은 소화·흡수 기관입니다. 배설 기관은 콩팥(요소 배출), 폐(CO₂), 피부(땀), 간(담즙으로 일부 물질 배출)입니다.' },
+      { q: '콩팥의 구조 중 집합관에 대한 설명으로 옳은 것은?', opts: ['여과가 일어나는 장소', '여러 세뇨관으로부터 오줌을 모아 콩팥 깔때기로 보냄', '혈구와 단백질을 여과하는 장소', '암모니아를 요소로 전환하는 장소'], ans: 1, exp: '집합관은 여러 세뇨관에서 오는 여과액을 모아 콩팥 깔때기로 보내는 역할을 합니다. ADH에 의해 물 재흡수가 조절됩니다.' },
+      { q: '혈액 투석의 원리로 옳은 것은?', opts: ['투석막을 통한 확산으로 노폐물 제거', '투석액이 혈액을 응고시켜 정화', '투석기가 요소를 포도당으로 전환', '투석액이 혈구를 새로 생성'], ans: 0, exp: '혈액 투석은 반투과성 투석막을 이용해 혈액 내 노폐물(요소 등)이 농도 차에 의해 투석액 쪽으로 확산되도록 합니다.' },
+      { q: '분비(tubular secretion)에 대한 설명으로 옳은 것은?', opts: ['세뇨관에서 혈액으로 물질을 돌려보내는 과정', '세뇨관 주위 모세혈관에서 세뇨관 안으로 물질을 능동 분비하는 과정', '사구체에서 보먼주머니로 물질이 이동하는 과정', '오줌에서 유용한 물질을 회수하는 과정'], ans: 1, exp: '분비는 세뇨관 주위 모세혈관에서 세뇨관 내부로 여과되지 못한 노폐물을 능동 수송하는 과정입니다.' }
+    ]
+  }
+,
+  {
+    id: 4, name: '물질대사와 질병', short: '4단원',
+    questions: [
+      { q: '당뇨병의 주요 원인으로 옳은 것은?', opts: ['칼슘 부족으로 인한 뼈 대사 이상', '인슐린 양 부족 또는 인슐린 기능 저하', '혈액 속 요산 수치 증가', '비타민 C 결핍'], ans: 1, exp: '당뇨병은 인슐린이 부족하거나 기능을 못해 포도당을 에너지원으로 이용하지 못하는 탄수화물 대사 이상입니다.' },
+      { q: '탄수화물 1g이 제공하는 에너지양은?', opts: ['9kcal', '7kcal', '4kcal', '2kcal'], ans: 2, exp: '탄수화물과 단백질은 1g당 4kcal, 지방은 1g당 9kcal의 에너지를 제공합니다.' },
+      { q: '지방 1g이 제공하는 에너지양은?', opts: ['4kcal', '7kcal', '9kcal', '5kcal'], ans: 2, exp: '지방은 1g당 9kcal로 탄수화물(4kcal/g), 단백질(4kcal/g)보다 에너지가 높습니다.' },
+      { q: '기초 대사량에 포함되지 않는 것은?', opts: ['체온 유지를 위한 에너지', '호흡에 사용되는 에너지', '심장 박동에 필요한 에너지', '격렬한 운동에 사용되는 에너지'], ans: 3, exp: '기초 대사량은 생명 유지에 필요한 최소한의 에너지로 체온 유지, 호흡, 심장 박동 등이 포함됩니다. 운동은 활동 대사량입니다.' },
+      { q: '비타민의 주요 기능으로 옳은 것은?', opts: ['주 에너지원으로 사용', '미량으로 생리 기능 조절', '항체의 주요 구성 성분', '인체의 주 구성 물질'], ans: 1, exp: '비타민은 부영양소로 에너지원으로 사용되지 않지만, 미량으로 다양한 생리 기능을 조절합니다.' },
+      { q: 'BMI(체질량지수)의 계산 공식으로 옳은 것은?', opts: ['체중(kg) ÷ 신장(m)', '체중(kg) ÷ 신장(m)²', '체중(kg) × 신장(m)', '신장(cm) ÷ 체중(kg) × 100'], ans: 1, exp: 'BMI = 체중(kg) ÷ 신장(m)²로 계산합니다. BMI 25 이상이면 비만으로 분류합니다.' },
+      { q: '지용성 비타민에 해당하는 것은?', opts: ['비타민 C', '비타민 B₁₂', '비타민 D', '비타민 B₁'], ans: 2, exp: '지용성 비타민: A, D, E, K. 수용성 비타민: B군, C. 비타민 D는 칼슘 흡수를 돕고 결핍 시 구루병이 생깁니다.' },
+      { q: '비타민 C 결핍 시 나타나는 질환은?', opts: ['야맹증', '구루병', '괴혈병', '각기병'], ans: 2, exp: '비타민 C(아스코르브산) 결핍 시 괴혈병(잇몸 출혈, 피부 출혈)이 나타납니다. 야맹증은 비타민 A, 구루병은 비타민 D, 각기병은 비타민 B₁ 결핍입니다.' },
+      { q: '고혈압의 위험 요인으로 옳지 않은 것은?', opts: ['나트륨 과다 섭취', '비만', '규칙적인 유산소 운동', '스트레스'], ans: 2, exp: '규칙적인 유산소 운동은 혈압을 낮추는 데 도움이 됩니다. 나트륨 과다, 비만, 스트레스는 고혈압의 위험 요인입니다.' },
+      { q: '1일 에너지 필요량(1일 대사량)의 구성 요소로 옳은 것은?', opts: ['기초 대사량만', '활동 대사량만', '기초 대사량 + 활동 대사량 + 소화에 필요한 에너지', '음식물의 열량만'], ans: 2, exp: '1일 에너지 필요량 = 기초 대사량 + 활동 대사량 + 음식물 소화·흡수에 필요한 에너지(식이성 발열 효과)입니다.' },
+      { q: '대사 증후군의 위험 요인이 아닌 것은?', opts: ['복부 비만', '고혈당', '저혈압', '고중성지방혈증'], ans: 2, exp: '대사 증후군의 진단 기준: 복부 비만, 고혈당, 고혈압, 고중성지방혈증, 저HDL 콜레스테롤 중 3가지 이상입니다.' },
+      { q: '단백질 1g이 제공하는 에너지양은?', opts: ['9kcal', '7kcal', '4kcal', '2kcal'], ans: 2, exp: '단백질은 탄수화물과 같이 1g당 4kcal의 에너지를 제공합니다. 지방(9kcal/g)보다 낮습니다.' },
+      { q: '비타민 A 결핍 시 나타나는 증상은?', opts: ['괴혈병', '야맹증', '구루병', '각기병'], ans: 1, exp: '비타민 A는 시각 색소(로돕신) 합성에 필요합니다. 결핍 시 어두운 곳에서 잘 보이지 않는 야맹증이 나타납니다.' },
+      { q: '무기질(미네랄)의 특징으로 옳은 것은?', opts: ['에너지원으로 사용된다', '탄소를 포함하는 유기 화합물이다', '체내에서 합성이 가능하다', '뼈와 치아 구성, 생리 기능 조절 역할을 한다'], ans: 3, exp: '무기질은 탄소를 포함하지 않는 무기 화합물로, 뼈/치아 구성(칼슘, 인), 효소 활성화(마그네슘), 삼투압 조절(나트륨) 등에 관여합니다.' },
+      { q: '인슐린의 역할로 옳은 것은?', opts: ['혈당을 높인다', '혈당을 낮춘다', '지방 분해를 촉진한다', '글루카곤 분비를 자극한다'], ans: 1, exp: '인슐린은 이자(췌장)의 β세포에서 분비되어 조직 세포의 포도당 흡수를 촉진하고 간에서 글리코겐 합성을 증가시켜 혈당을 낮춥니다.' },
+      { q: '체내에서 에너지원으로 가장 먼저 사용되는 영양소는?', opts: ['지방', '단백질', '탄수화물', '무기질'], ans: 2, exp: '탄수화물(포도당)은 세포 호흡의 주요 에너지원으로 가장 먼저 이용됩니다. 부족 시 지방, 최후에 단백질이 사용됩니다.' },
+      { q: '비만이 건강에 미치는 영향으로 옳지 않은 것은?', opts: ['제2형 당뇨병 위험 증가', '심혈관 질환 위험 증가', '면역 기능 강화', '고혈압 위험 증가'], ans: 2, exp: '비만은 제2형 당뇨병, 심혈관 질환, 고혈압, 관절 질환 등의 위험을 높입니다. 면역 기능 강화와는 관련이 없습니다.' },
+      { q: '콜레스테롤에 대한 설명으로 옳지 않은 것은?', opts: ['세포막의 구성 성분이다', '스테로이드 호르몬 합성 재료이다', '체내에서 전혀 합성되지 않는다', '담즙산의 원료가 된다'], ans: 2, exp: '콜레스테롤은 간에서 합성됩니다. 세포막 구성, 스테로이드 호르몬·담즙산 합성에 사용되며 음식으로도 섭취됩니다.' },
+      { q: '기초대사량에 영향을 주는 요인으로 옳지 않은 것은?', opts: ['체표면적', '나이(연령)', '성별', '음식의 맛'], ans: 3, exp: '기초대사량은 체표면적(클수록 높음), 나이(나이 들수록 감소), 성별(남성이 높음), 체온, 호르몬 등에 영향을 받습니다.' },
+      { q: '수용성 비타민의 특징으로 옳은 것은?', opts: ['지방에 녹는다', '과잉 섭취 시 체내에 축적된다', '과잉 섭취해도 소변으로 배출된다', 'A, D, E, K가 해당된다'], ans: 2, exp: '수용성 비타민(B군, C)은 물에 녹아 과잉 섭취 시 소변으로 배출됩니다. 지용성 비타민(A, D, E, K)은 체내 축적됩니다.' }
+    ]
+  },
+  {
+    id: 5, name: '흥분 전도와 전달', short: '5단원',
+    questions: [
+      { q: '뉴런의 구조 중 자극을 받아들이는 나뭇가지 모양의 짧은 돌기는?', opts: ['축삭 돌기', '가지 돌기', '신경 세포체', '말이집'], ans: 1, exp: '가지 돌기는 신경 세포체에서 나뭇가지 모양으로 뻗어 나온 짧은 돌기로, 감각기나 다른 뉴런으로부터 자극을 받아들입니다.' },
+      { q: '분극 상태의 뉴런에서 세포막 안쪽은 어떤 전하를 띠는가?', opts: ['양(+)전하', '중성(0mV)', '음(−)전하', '교대로 변함'], ans: 2, exp: '분극(흥분이 발생하지 않은 상태)에서 세포막을 경계로 안쪽은 음(−)전하, 바깥쪽은 양(+)전하를 띱니다(막전위 약 −70mV).' },
+      { q: '탈분극 시 세포 안으로 유입되는 이온은?', opts: ['K⁺', 'Ca²⁺', 'Na⁺', 'Cl⁻'], ans: 2, exp: '탈분극은 Na⁺ 통로가 열려 Na⁺이 세포 안으로 유입되면서 막전위가 상승하여 세포 안쪽이 양(+)전하가 되는 현상입니다.' },
+      { q: '말이집 신경이 민말이집 신경보다 흥분 전도가 빠른 이유는?', opts: ['축삭 지름이 더 가늘어 저항이 적기 때문', '랑비에 결절에서 도약 전도가 일어나기 때문', '시냅스가 없어서 연속적으로 전도되기 때문', 'K⁺ 통로가 더 많이 존재하기 때문'], ans: 1, exp: '말이집 신경은 랑비에 결절에서 도약 전도가 일어나므로 민말이집 신경보다 전도 속도가 훨씬 빠릅니다.' },
+      { q: '시냅스에서 신경 전달 물질이 방출되는 곳은?', opts: ['시냅스 후 뉴런의 가지 돌기', '신경 세포체의 핵', '축삭 돌기 말단의 시냅스 소포', '보먼주머니'], ans: 2, exp: '축삭 돌기 말단에는 시냅스 소포가 있어 신경 전달 물질이 시냅스 틈으로 방출됩니다.' },
+      { q: '재분극 시 세포 밖으로 유출되는 이온은?', opts: ['Na⁺', 'Ca²⁺', 'K⁺', 'Cl⁻'], ans: 2, exp: '재분극은 K⁺ 통로가 열려 K⁺이 세포 밖으로 유출되면서 막전위가 다시 하강하여 안쪽이 음(−)전하로 돌아가는 현상입니다.' },
+      { q: '실무율(All-or-None Law)에 대한 설명으로 옳은 것은?', opts: ['자극이 강할수록 활동 전위가 더 크다', '역치 이상의 자극에서는 항상 같은 크기의 활동 전위가 발생한다', '역치 미만 자극도 반응을 일으킨다', '자극 빈도와 활동 전위 크기는 비례한다'], ans: 1, exp: '실무율: 역치(threshold) 이상의 자극에서는 자극 세기에 관계없이 항상 일정한 크기의 활동 전위가 발생합니다.' },
+      { q: '뉴런의 종류 중 감각 기관에서 중추 신경계로 정보를 전달하는 것은?', opts: ['운동 뉴런', '연합 뉴런', '감각 뉴런', '자율신경 뉴런'], ans: 2, exp: '감각 뉴런(구심성 뉴런)은 감각 기관의 자극을 중추 신경계(뇌·척수)로 전달합니다.' },
+      { q: '시냅스에서 흥분 전달이 한 방향으로만 일어나는 이유는?', opts: ['축삭 돌기가 한쪽 방향으로만 자람', '시냅스 소포는 시냅스 전 뉴런 말단에만 있기 때문', '신경 전달 물질이 양쪽에서 동시에 분비됨', '시냅스 틈이 매우 좁기 때문'], ans: 1, exp: '신경 전달 물질이 담긴 시냅스 소포는 시냅스 전 뉴런의 축삭 말단에만 존재하므로, 흥분은 시냅스 전→후 방향으로만 전달됩니다.' },
+      { q: '말이집(수초)의 주요 기능으로 옳은 것은?', opts: ['신경 전달 물질 저장', '전기 절연으로 흥분 전도 속도 증가', '시냅스 형성', 'K⁺ 이온 운반'], ans: 1, exp: '말이집(수초)은 슈반 세포가 축삭을 둘러싼 구조로 전기적 절연체 역할을 하여 도약 전도를 가능하게 합니다.' },
+      { q: '활동 전위에서 막전위의 최고값은 약 얼마인가?', opts: ['-70mV', '0mV', '+35mV', '+100mV'], ans: 2, exp: '활동 전위 시 막전위는 안정 시 약 -70mV에서 탈분극에 의해 약 +35mV까지 상승합니다.' },
+      { q: '신경 전달 물질이 시냅스 후 뉴런의 수용체에 결합한 후 어떻게 되는가?', opts: ['영구적으로 수용체에 결합된 채로 남는다', '분해 효소에 의해 분해되거나 재흡수된다', '혈액으로 방출된다', '시냅스 전 뉴런으로 확산된다'], ans: 1, exp: '신경 전달 물질은 효과를 내고 난 후 분해 효소에 의해 분해되거나 시냅스 전 뉴런으로 재흡수되어 재사용됩니다.' },
+      { q: '아세틸콜린의 역할로 옳은 것은?', opts: ['혈당을 낮추는 호르몬', '교감 신경의 신경 전달 물질로 심장 박동 촉진', '운동 뉴런과 골격근 사이의 신경 전달 물질', '말이집 형성에 필요한 단백질'], ans: 2, exp: '아세틸콜린은 운동 뉴런과 골격근의 신경근 접합부, 부교감 신경 말단에서 분비되는 신경 전달 물질입니다.' },
+      { q: '흥분의 전도 방향으로 옳은 것은?', opts: ['가지 돌기 → 신경 세포체 → 축삭 돌기', '축삭 돌기 → 신경 세포체 → 가지 돌기', '신경 세포체 → 가지 돌기 → 축삭 돌기', '양방향 모두 가능'], ans: 0, exp: '흥분의 전도: 가지 돌기(자극 수용) → 신경 세포체 → 축삭 돌기 방향으로 진행됩니다.' },
+      { q: '뉴런의 안정 시 막전위(-70mV)를 유지하는 주요 이온 펌프는?', opts: ['칼슘 펌프(Ca²⁺ pump)', '나트륨-칼륨 펌프(Na⁺-K⁺ pump)', '수소 이온 펌프(H⁺ pump)', '염소 이온 채널(Cl⁻ channel)'], ans: 1, exp: 'Na⁺-K⁺ 펌프는 ATP를 소비하여 Na⁺ 3개를 세포 밖으로, K⁺ 2개를 세포 안으로 이동시켜 안정 막전위를 유지합니다.' },
+      { q: '연합 뉴런의 위치와 기능으로 옳은 것은?', opts: ['감각 기관에 위치, 자극 수용', '뇌와 척수에 위치, 감각과 운동 뉴런을 연결·통합', '근육에 위치, 수축 명령 전달', '시냅스 틈에 위치, 신경 전달 물질 분해'], ans: 1, exp: '연합 뉴런(사이 뉴런)은 뇌와 척수(중추 신경계)에 위치하며 감각 뉴런과 운동 뉴런 사이에서 정보를 통합·연결합니다.' },
+      { q: '노르에피네프린(노르아드레날린)의 주요 작용은?', opts: ['부교감 신경 말단에서 분비되어 이완 유도', '교감 신경 말단에서 분비되어 심박수 증가', '골격근 수축 직접 유도', '혈당 감소'], ans: 1, exp: '노르에피네프린은 교감 신경 말단에서 분비되어 심박수 증가, 혈관 수축, 혈압 상승 등 긴장 반응을 유발합니다.' },
+      { q: '시냅스 소포(synaptic vesicle)에 들어 있는 것은?', opts: ['유전 물질(DNA)', '신경 전달 물질', 'ATP 합성 효소', '핵소체(인)'], ans: 1, exp: '시냅스 소포는 축삭 돌기 말단에 있으며 신경 전달 물질을 담고 있다가 자극 시 시냅스 틈으로 방출합니다.' },
+      { q: '흥분 전달과 흥분 전도의 차이로 옳은 것은?', opts: ['전도는 시냅스를 통하고, 전달은 하나의 뉴런 내에서', '전도는 하나의 뉴런 내에서, 전달은 시냅스를 통해 뉴런 간에', '전도와 전달은 같은 현상이다', '전달은 전기 신호, 전도는 화학 신호'], ans: 1, exp: '흥분 전도는 한 뉴런 내에서 활동 전위가 이동하는 것이고, 흥분 전달은 시냅스를 통해 한 뉴런에서 다음 뉴런으로 신호가 전달되는 것입니다.' },
+      { q: '역치(閾値, threshold)에 대한 설명으로 옳은 것은?', opts: ['활동 전위의 최대 크기', '흥분을 일으키는 데 필요한 최소한의 자극 세기', '재분극이 끝나는 시점의 막전위', '시냅스 틈의 최소 너비'], ans: 1, exp: '역치는 활동 전위를 일으킬 수 있는 최소한의 자극 세기입니다. 역치 미만의 자극은 활동 전위를 발생시키지 않습니다.' }
+    ]
+  },
+  {
+    id: 6, name: '신경계의 구조와 기능', short: '6단원',
+    questions: [
+      { q: '중추 신경계를 구성하는 것은?', opts: ['뇌신경과 척수신경', '뇌와 척수', '교감신경과 부교감신경', '체성신경과 자율신경'], ans: 1, exp: '중추 신경계는 뇌와 척수로 구성됩니다.' },
+      { q: '중추 신경계의 명령을 근육과 같은 반응기로 전달하는 뉴런은?', opts: ['감각 뉴런 (구심성)', '연합 뉴런', '운동 뉴런 (원심성)', '자율신경 뉴런'], ans: 2, exp: '운동 뉴런(원심성 뉴런)은 중추 신경계의 명령을 근육과 같은 반응기로 전달합니다.' },
+      { q: '교감 신경의 작용으로 옳은 것은?', opts: ['심장 박동 수 감소', '소화 기능 촉진', '동공 확대', '기관지 수축'], ans: 2, exp: '교감 신경은 긴장·흥분 상태에서 활성화되어 심장 박동 증가, 동공 확대, 기관지 확장, 소화 억제 등을 유발합니다.' },
+      { q: '뇌에서 뻗어 나온 말초신경을 무엇이라 하는가?', opts: ['척수신경', '뇌신경', '자율신경', '체성신경'], ans: 1, exp: '뇌신경은 뇌에서 직접 뻗어 나온 12쌍의 말초신경입니다. 척수신경은 척수에서 나온 31쌍의 말초신경입니다.' },
+      { q: '소뇌의 주요 기능은?', opts: ['언어 이해와 생성', '몸의 균형 유지와 근육 운동 조절', '호흡과 심장 박동 조절', '체온과 혈당 조절'], ans: 1, exp: '소뇌는 대뇌 뒤쪽 아래에 위치하며 몸의 균형 유지, 근육 운동의 정교한 조절, 자세 유지 등을 담당합니다.' },
+      { q: '연수(숨뇌)가 담당하는 기능은?', opts: ['학습과 기억', '감각과 운동의 중계', '호흡 운동, 심장 박동, 소화 운동 조절', '체온·혈당·삼투압 조절'], ans: 2, exp: '연수는 뇌간의 아래 부분으로 호흡 운동, 심장 박동, 소화 운동, 기침·재채기·구토 반사 중추가 있습니다.' },
+      { q: '척수의 기능이 아닌 것은?', opts: ['뇌와 말초 신경 사이 신호 전달 통로', '무릎 반사 등 단순 반사 중추', '사고와 판단의 중추', '배뇨·배변 반사 중추'], ans: 2, exp: '사고·판단·의식은 대뇌의 기능입니다. 척수는 반사 중추이며 뇌와 말초 사이 전달 통로 역할을 합니다.' },
+      { q: '부교감 신경의 작용으로 옳은 것은?', opts: ['심박수 증가', '소화액 분비 촉진', '동공 확대', '혈관 수축'], ans: 1, exp: '부교감 신경은 안정 상태에서 활성화되어 소화 촉진, 심박수 감소, 동공 축소, 혈관 확장 등을 유발합니다.' },
+      { q: '무릎 반사의 경로로 옳은 것은?', opts: ['감각기 → 대뇌 → 척수 → 반응기', '감각기 → 척수 → 반응기', '감각기 → 소뇌 → 반응기', '감각기 → 연수 → 반응기'], ans: 1, exp: '무릎 반사는 척수 반사로, 대뇌를 거치지 않고 감각기 → 척수(연합 뉴런) → 반응기(근육) 경로로 빠르게 일어납니다.' },
+      { q: '대뇌 겉질(피질)의 기능 영역 중 운동 피질은 어디에 위치하는가?', opts: ['뒤통수엽(후두엽)', '관자엽(측두엽)', '이마엽(전두엽)의 중심 앞 이랑', '마루엽(두정엽)'], ans: 2, exp: '운동 피질(1차 운동 피질)은 이마엽(전두엽)의 중심 앞 이랑에 위치하며 골격근의 수의 운동을 지시합니다.' },
+      { q: '간뇌(사이뇌)가 조절하는 기능은?', opts: ['반사 운동', '호흡·심박 조절', '체온·혈당·삼투압 항상성 조절', '언어와 기억'], ans: 2, exp: '간뇌의 시상 하부는 체온·혈당·삼투압 등의 항상성을 조절하는 중추입니다.' },
+      { q: '자율신경계에 대한 설명으로 옳은 것은?', opts: ['의지에 의해 조절 가능하다', '심장, 소화관, 혈관 등 내장 기관을 지배한다', '골격근의 수축을 조절한다', '감각 기관에서만 작용한다'], ans: 1, exp: '자율신경계는 의지와 무관하게 내장 기관(심장, 소화관, 혈관, 선)을 자율적으로 조절합니다.' },
+      { q: '척수신경은 몇 쌍인가?', opts: ['12쌍', '21쌍', '31쌍', '41쌍'], ans: 2, exp: '척수신경은 31쌍(경신경 8쌍, 흉신경 12쌍, 요신경 5쌍, 천골신경 5쌍, 미골신경 1쌍)입니다. 뇌신경은 12쌍입니다.' },
+      { q: '대뇌의 기능으로 옳지 않은 것은?', opts: ['학습과 기억', '감정과 의식', '무의식적 반사 조절', '고등 정신 활동'], ans: 2, exp: '무의식적 반사는 척수(단순 반사)나 뇌간이 담당합니다. 대뇌는 의식적 활동, 학습, 기억, 판단을 담당합니다.' },
+      { q: '말초 신경계를 구성하는 것은?', opts: ['뇌와 척수', '뇌신경과 척수신경', '대뇌와 소뇌', '연수와 교뇌'], ans: 1, exp: '말초 신경계는 뇌신경(12쌍)과 척수신경(31쌍)으로 구성되며 중추 신경계와 각 기관을 연결합니다.' },
+      { q: '동공 반사를 조절하는 신경은?', opts: ['체성신경', '자율신경(교감·부교감)', '척수신경', '감각신경만'], ans: 1, exp: '동공 크기는 자율신경으로 조절됩니다. 밝은 곳에서는 부교감신경이 동공을 축소, 어두운 곳에서는 교감신경이 동공을 확대합니다.' },
+      { q: '뇌간(腦幹)을 구성하는 부위로 옳은 것은?', opts: ['대뇌, 소뇌, 간뇌', '중뇌, 교뇌, 연수', '대뇌, 연수, 척수', '간뇌, 소뇌, 척수'], ans: 1, exp: '뇌간은 중뇌(중간뇌), 교뇌(다리뇌), 연수(숨뇌)로 구성되며 호흡·심박·각성 등 생명 유지 기능을 담당합니다.' },
+      { q: '체성 신경계의 특징으로 옳은 것은?', opts: ['불수의적으로 내장 기관을 지배', '감각 신경과 운동 신경으로 구성, 수의 운동 담당', '교감신경과 부교감신경으로 구성', '뇌에서만 나와 작용'], ans: 1, exp: '체성 신경계는 감각 신경(구심성)과 운동 신경(원심성)으로 구성되며, 골격근의 수의 운동을 지배합니다.' },
+      { q: '대뇌 피질 중 시각 정보를 처리하는 영역은?', opts: ['전두엽', '두정엽', '측두엽', '후두엽'], ans: 3, exp: '후두엽(뒤통수엽)에는 시각 피질이 있어 눈에서 들어온 시각 정보를 처리합니다.' },
+      { q: '무조건 반사(비조건 반사)의 특징으로 옳은 것은?', opts: ['대뇌의 학습에 의해 형성됨', '선천적이며 대뇌를 거치지 않고 일어남', '교감 신경에 의해서만 조절됨', '반응 속도가 조건 반사보다 느림'], ans: 1, exp: '무조건 반사(ex: 무릎 반사, 동공 반사)는 선천적이며 뇌간이나 척수가 중추로, 대뇌를 거치지 않아 빠르게 일어납니다.' }
+    ]
+  },
+  {
+    id: 7, name: '근육의 구조와 수축', short: '7단원',
+    questions: [
+      { q: '골격근 수축의 기본 단위인 근절(sarcomere)의 경계를 이루는 것은?', opts: ['H대', 'I대', 'Z선(Z막)', 'M선'], ans: 2, exp: '근절은 Z선과 Z선 사이의 구간으로, 근섬유의 구조적·기능적 수축 단위입니다.' },
+      { q: '근절에서 마이오신 필라멘트만 있는 부분은?', opts: ['I대', 'A대 전체', 'H대', 'Z선'], ans: 2, exp: 'H대는 근절 중앙에 위치하며 마이오신 필라멘트만 있고 액틴이 겹치지 않는 부분입니다.' },
+      { q: '근육 수축 시 길이가 변하지 않는 부분은?', opts: ['I대', 'H대', 'A대', '근절 전체'], ans: 2, exp: 'A대의 길이는 마이오신 필라멘트의 길이와 같으므로 수축 시에도 변하지 않습니다. I대와 H대는 짧아집니다.' },
+      { q: '활주설(Sliding Filament Theory)에서 근육 수축 시 일어나는 현상은?', opts: ['마이오신 필라멘트가 짧아진다', '액틴 필라멘트가 마이오신 쪽으로 미끄러져 들어간다', '근절의 A대가 짧아진다', '액틴과 마이오신 모두 짧아진다'], ans: 1, exp: '활주설에 따르면 액틴 필라멘트가 마이오신 필라멘트 사이로 미끄러져 들어가 근절이 짧아집니다. 필라멘트 자체 길이는 변하지 않습니다.' },
+      { q: '근육 수축에 필요한 이온은?', opts: ['Na⁺', 'K⁺', 'Ca²⁺', 'Cl⁻'], ans: 2, exp: 'Ca²⁺(칼슘 이온)이 근소포체에서 방출되면 트로포닌에 결합하여 액틴-마이오신 결합을 가능하게 합니다.' },
+      { q: '근원섬유(myofibril)의 구성 성분은?', opts: ['근섬유와 근세포', '액틴과 마이오신 필라멘트', '사르코메어와 T세관', '미토콘드리아와 핵'], ans: 1, exp: '근원섬유는 가는 액틴 필라멘트와 굵은 마이오신 필라멘트로 구성됩니다. 이들의 규칙적인 배열이 가로무늬를 만듭니다.' },
+      { q: '근육 수축 시 I대의 변화는?', opts: ['길어진다', '변하지 않는다', '짧아진다', '사라진다'], ans: 2, exp: '수축 시 액틴이 마이오신 사이로 들어가므로 액틴만 있는 I대는 짧아집니다.' },
+      { q: '근육 수축 시 H대의 변화는?', opts: ['길어진다', '변하지 않는다', '짧아지거나 사라진다', 'A대로 변환된다'], ans: 2, exp: '수축 시 액틴이 마이오신 사이로 들어와 겹치므로 마이오신만 있는 H대는 짧아지거나 최대 수축 시 사라집니다.' },
+      { q: '골격근의 특징으로 옳은 것은?', opts: ['불수의근이며 가로무늬 없음', '수의근이며 가로무늬 있음', '불수의근이며 가로무늬 있음', '수의근이며 가로무늬 없음'], ans: 1, exp: '골격근은 수의근(의지대로 조절)이며 액틴·마이오신의 규칙적 배열로 가로무늬(횡문)가 있습니다.' },
+      { q: '근육 수축에 직접 에너지를 공급하는 물질은?', opts: ['포도당', 'ATP', '지방산', '아미노산'], ans: 1, exp: 'ATP가 마이오신 머리 부분에서 분해되어 방출된 에너지로 크로스브리지가 형성되고 액틴이 당겨집니다.' },
+      { q: '심장근(심근)의 특징으로 옳은 것은?', opts: ['수의근이며 단핵세포', '불수의근이며 가로무늬 있음', '수의근이며 가로무늬 없음', '불수의근이며 가로무늬 없음'], ans: 1, exp: '심장근은 불수의근(자율신경 조절)이며 골격근처럼 가로무늬가 있습니다. 자동 박동성도 가집니다.' },
+      { q: '근육 피로 시 생성되는 물질로 옳은 것은?', opts: ['ATP', '포도당', '젖산(락트산)', '글리코겐'], ans: 2, exp: '무산소 운동 시 산소가 부족해 포도당이 완전히 산화되지 못하고 젖산이 생성되어 근육에 쌓이면 피로를 유발합니다.' },
+      { q: '근수축 조절의 순서로 옳은 것은?', opts: ['ATP 분해 → Ca²⁺ 방출 → 운동 신경 흥분 → 근수축', '운동 신경 흥분 → Ca²⁺ 방출 → 액틴-마이오신 결합 → 근수축', '근수축 → Ca²⁺ 방출 → ATP 분해 → 이완', 'Ca²⁺ 방출 → 운동 신경 흥분 → ATP 분해 → 근수축'], ans: 1, exp: '운동 신경 흥분 → 신경근 접합부에서 아세틸콜린 분비 → 근세포막 탈분극 → 근소포체에서 Ca²⁺ 방출 → 액틴-마이오신 결합 → 근수축.' },
+      { q: '내장근(평활근)의 특징으로 옳은 것은?', opts: ['수의근, 가로무늬 있음', '불수의근, 가로무늬 없음', '수의근, 가로무늬 없음', '불수의근, 가로무늬 있음'], ans: 1, exp: '내장근(평활근)은 소화관, 혈관 벽 등에 분포하며 불수의근이고 규칙적인 필라멘트 배열이 없어 가로무늬가 없습니다.' },
+      { q: '마이오신 머리(cross-bridge)의 역할은?', opts: ['ATP를 합성한다', 'Ca²⁺을 저장한다', 'ATP를 분해하고 액틴과 결합하여 힘을 발생시킨다', '근소포체를 구성한다'], ans: 2, exp: '마이오신 머리는 ATPase 활성이 있어 ATP를 분해하고, 액틴 필라멘트와 결합(크로스브리지)하여 당기는 힘을 발생시킵니다.' },
+      { q: '근육이 이완될 때 일어나는 변화는?', opts: ['Ca²⁺ 농도 증가', '근소포체가 Ca²⁺을 재흡수하여 액틴-마이오신 결합이 해제됨', 'ATP가 합성됨', '마이오신이 액틴을 밀어낸다'], ans: 1, exp: '이완 시 Ca²⁺이 근소포체로 재흡수되면 트로포닌이 원래 위치로 돌아가 마이오신 결합 부위를 가려 액틴-마이오신이 분리됩니다.' },
+      { q: '트로포닌(troponin)의 기능은?', opts: ['마이오신 필라멘트 구성', 'Ca²⁺와 결합하여 트로포마이오신을 이동시켜 액틴의 결합 부위를 노출', 'ATP를 분해하여 에너지 공급', '근소포체에서 Ca²⁺을 방출'], ans: 1, exp: 'Ca²⁺이 트로포닌에 결합하면 트로포마이오신이 이동하여 액틴의 마이오신 결합 부위가 노출되어 수축이 일어납니다.' },
+      { q: '근섬유(muscle fiber)에 대한 설명으로 옳은 것은?', opts: ['단핵세포이다', '다핵세포로 여러 개의 핵을 가진다', '핵이 없다', '미토콘드리아가 없다'], ans: 1, exp: '근섬유는 여러 근아세포가 융합된 다핵세포(다핵 합포체)로, 수많은 근원섬유를 포함합니다.' },
+      { q: '격렬한 운동 후 산소 부채가 발생하는 이유는?', opts: ['산소 과잉 생산', '젖산을 처리하고 ATP와 글리코겐을 회복하기 위해 추가 산소가 필요', '이산화탄소 축적', '심박수 감소'], ans: 1, exp: '격렬한 운동 중 무산소 호흡으로 생성된 젖산 제거와 ATP·글리코겐 회복을 위해 운동 후에도 추가 산소가 소모됩니다.' },
+      { q: 'A대에 포함된 필라멘트는?', opts: ['액틴만', '마이오신만', '액틴과 마이오신이 겹친 부분 + 마이오신만 있는 H대', '액틴과 마이오신이 겹친 부분만'], ans: 2, exp: 'A대는 마이오신 필라멘트 전체에 해당하는 영역으로, 액틴과 겹치는 부분과 마이오신만 있는 H대를 포함합니다.' }
+    ]
+  },
+
+  {
+    id: 8, name: '염색체와 유전 물질', short: '8단원',
+    questions: [
+      { q: 'DNA의 이중나선 구조에서 아데닌(A)과 항상 결합하는 염기는?', opts: ['구아닌(G)', '시토신(C)', '티민(T)', '유라실(U)'], ans: 2, exp: 'DNA에서 아데닌(A)은 티민(T)과 2개의 수소결합으로, 구아닌(G)은 시토신(C)과 3개의 수소결합으로 결합합니다.' },
+      { q: '뉴클레오타이드(nucleotide)의 구성 요소로 옳은 것은?', opts: ['아미노산 + 인산 + 당', '염기 + 인산 + 5탄당', '염기 + 아미노산 + 인산', '지방산 + 인산 + 염기'], ans: 1, exp: '뉴클레오타이드는 염기 + 5탄당(디옥시리보스 또는 리보스) + 인산으로 구성됩니다.' },
+      { q: '사람의 체세포 1개에 있는 염색체 수는?', opts: ['23개', '46개', '44개', '48개'], ans: 1, exp: '사람의 체세포는 2n=46개의 염색체를 가집니다(44개의 상염색체 + 2개의 성염색체).' },
+      { q: '염색체를 구성하는 단백질로 옳은 것은?', opts: ['액틴', '히스톤', '마이오신', '콜라겐'], ans: 1, exp: 'DNA는 히스톤 단백질을 감아서 뉴클레오솜을 형성하고, 이것이 압축되어 염색체를 이룹니다.' },
+      { q: '사람의 정상 남성의 핵형은?', opts: ['44+XX', '44+XY', '45+XY', '46+XX'], ans: 1, exp: '사람의 정상 남성은 22쌍(44개)의 상염색체와 X, Y 성염색체를 가지므로 핵형은 44+XY(2n=46)입니다.' },
+      { q: '상동 염색체에 대한 설명으로 옳은 것은?', opts: ['크기와 모양이 같고 같은 위치에 대립 유전자를 가진 한 쌍의 염색체', '체세포 분열 시 분리되는 염색분체', '성염색체로만 구성된 쌍', '부모로부터 같은 쪽에서만 유래한 염색체'], ans: 0, exp: '상동 염색체는 크기·모양이 같으며 같은 위치(유전자좌)에 대립 유전자를 가진 한 쌍의 염색체로, 하나는 아버지, 하나는 어머니로부터 유래합니다.' },
+      { q: 'DNA 반보존적 복제의 의미는?', opts: ['두 가닥 모두 새로 합성된다', '한 가닥은 원래 가닥, 나머지 한 가닥은 새로 합성된다', '두 가닥이 교대로 주형 역할을 한다', '복제 시 염기 서열이 절반만 복사된다'], ans: 1, exp: '반보존적 복제: DNA 이중나선의 두 가닥이 분리되어 각각 주형이 되고, 새 가닥이 합성되어 딸 DNA는 각각 원래 가닥 1개 + 새 가닥 1개로 구성됩니다.' },
+      { q: '유전자(gene)에 대한 설명으로 옳은 것은?', opts: ['염색체 전체를 가리킨다', 'DNA의 특정 서열로 단백질 합성 정보를 가진 단위', '히스톤 단백질의 다른 이름', '세포 분열 시 나타나는 염색체 구조'], ans: 1, exp: '유전자는 DNA의 특정 염기 서열로, 특정 단백질 또는 RNA를 합성하는 유전 정보를 담고 있는 기능적 단위입니다.' },
+      { q: '대립 유전자(allele)의 위치는?', opts: ['같은 염색체의 다른 위치', '상동 염색체의 같은 위치(유전자좌)', '서로 다른 쌍의 염색체', '성염색체에만 존재'], ans: 1, exp: '대립 유전자는 상동 염색체의 같은 위치(유전자좌, locus)에 존재하는 대립 형질의 유전자쌍입니다.' },
+      { q: 'DNA에서 정보를 읽어 mRNA를 합성하는 과정은?', opts: ['번역(translation)', '전사(transcription)', '복제(replication)', '역전사(reverse transcription)'], ans: 1, exp: '전사는 DNA의 특정 서열을 주형으로 RNA 중합효소가 상보적인 mRNA를 합성하는 과정입니다.' },
+      { q: '코돈(codon)에 대한 설명으로 옳은 것은?', opts: ['tRNA의 3개 염기 서열', 'mRNA의 3개 염기 서열로 아미노산 1개를 지정', 'DNA의 4개 염기 서열', '리보솜의 특정 구조'], ans: 1, exp: '코돈은 mRNA의 연속된 3개 염기 서열(3염기 조합)로, 특정 아미노산 또는 종결 신호를 지정합니다.' },
+      { q: 'DNA와 RNA의 차이로 옳은 것은?', opts: ['DNA는 단일가닥, RNA는 이중가닥', 'DNA의 당은 디옥시리보스, RNA의 당은 리보스', 'DNA의 염기에는 유라실, RNA에는 티민이 있다', 'DNA와 RNA 모두 같은 당을 사용한다'], ans: 1, exp: 'DNA는 디옥시리보스를 사용하고, RNA는 리보스를 사용합니다. 또한 DNA는 티민(T), RNA는 유라실(U)을 사용합니다.' },
+      { q: '염색분체(chromatid)에 대한 설명으로 옳은 것은?', opts: ['상동 염색체의 다른 이름', 'DNA 복제 후 동원체로 연결된 2개의 동일한 DNA 가닥', '서로 다른 염색체 간의 교차 산물', '단백질로만 구성된 구조'], ans: 1, exp: 'S기에 DNA가 복제되면 동일한 두 염색분체가 동원체(센트로미어)로 연결됩니다.' },
+      { q: '핵형(karyotype)이란 무엇인가?', opts: ['유전자의 총 수', '한 개체가 가진 염색체의 수, 크기, 모양의 특징', '상염색체의 종류', 'DNA 염기 서열의 총합'], ans: 1, exp: '핵형은 한 생물이 가진 염색체의 수, 크기, 모양 등의 형태적 특징입니다. 사람은 2n=46의 핵형을 가집니다.' },
+      { q: '세포 주기 중 DNA가 복제되는 시기는?', opts: ['G1기', 'S기', 'G2기', 'M기(분열기)'], ans: 1, exp: 'S기(DNA 합성기)에 DNA가 복제되어 유전 물질의 양이 2배가 됩니다.' },
+      { q: 'mRNA에서 단백질이 합성되는 과정은?', opts: ['전사', '복제', '번역', '역전사'], ans: 2, exp: '번역은 리보솜에서 mRNA의 코돈을 읽어 tRNA가 운반하는 아미노산을 순서대로 연결하여 단백질을 합성하는 과정입니다.' },
+      { q: '뉴클레오솜(nucleosome)의 구성은?', opts: ['DNA + 리보솜', '히스톤 8개 + 그 주위를 감은 DNA', '인트론만으로 구성', 'RNA + 단백질'], ans: 1, exp: '뉴클레오솜은 히스톤 8개 주위를 DNA가 약 2바퀴 감싼 구조로 염색체 압축의 기본 단위입니다.' },
+      { q: '성염색체에 대한 설명으로 옳은 것은?', opts: ['남녀 모두 XX를 가진다', '여성은 XX, 남성은 XY를 가진다', '남성은 XX, 여성은 XY를 가진다', '성별과 무관한 염색체이다'], ans: 1, exp: '사람의 성염색체: 여성은 XX, 남성은 XY입니다.' },
+      { q: 'DNA 이중나선에서 G+C의 비율이 40%라면 A의 비율은?', opts: ['10%', '20%', '30%', '40%'], ans: 2, exp: 'G+C=40%이면 A+T=60%, A=T이므로 A=30%입니다.' },
+      { q: '유전 암호의 특성으로 옳지 않은 것은?', opts: ['3개의 염기가 1개의 아미노산을 지정', '거의 모든 생물에서 동일(보편성)', '1개의 아미노산을 반드시 1개의 코돈만 지정', '64가지 코돈 중 3개는 종결 코돈'], ans: 2, exp: '유전 암호는 축중성이 있어 하나의 아미노산을 여러 코돈이 지정할 수 있습니다.' }
+    ]
+  },
+  {
+    id: 9, name: '생식세포 분열', short: '9단원',
+    questions: [
+      { q: '감수분열이 일어나는 세포는?', opts: ['피부 세포', '생식 기관의 생식 모세포', '신경 세포', '근육 세포'], ans: 1, exp: '감수분열(meiosis)은 정소와 난소의 생식 모세포에서 일어나 생식세포(정자, 난자)를 형성합니다.' },
+      { q: '감수 1분열의 특징으로 옳은 것은?', opts: ['염색분체가 분리된다', '상동 염색체가 분리된다', '핵분열 없이 세포질만 분열', 'DNA 복제가 일어난다'], ans: 1, exp: '감수 1분열에서 상동 염색체가 분리되어 염색체 수가 반감됩니다(2n→n).' },
+      { q: '감수분열 결과 생성되는 딸세포의 핵상은?', opts: ['2n', 'n', '4n', '3n'], ans: 1, exp: '감수분열의 결과 1개의 모세포에서 4개의 딸세포가 생성되며 각각 n(반수체) 핵상을 가집니다.' },
+      { q: '체세포 분열과 감수분열의 차이로 옳은 것은?', opts: ['체세포 분열은 DNA 복제 없이 일어난다', '체세포 분열 결과 2개의 2n 세포, 감수분열 결과 4개의 n 세포', '감수분열은 한 번의 분열로 완성된다', '체세포 분열은 생식 기관에서만 일어난다'], ans: 1, exp: '체세포 분열: 1번 분열 → 2개의 2n 세포. 감수분열: 2번 연속 분열 → 4개의 n 세포.' },
+      { q: '2가 염색체(bivalent)가 형성되는 시기는?', opts: ['감수 1분열 전기', '감수 2분열 전기', '체세포 분열 전기', '감수 1분열 후기'], ans: 0, exp: '감수 1분열 전기에 상동 염색체가 짝을 이뤄 2가 염색체(4분 염색체)를 형성합니다.' },
+      { q: '감수분열 중 유전적 다양성을 높이는 현상은?', opts: ['DNA 반보존적 복제', '염색분체 분리', '상동 염색체 교차와 독립적 배분', '히스톤 단백질 결합'], ans: 2, exp: '상동 염색체의 교차(유전자 재조합)와 독립적 배분(무작위 배열)으로 유전적으로 다양한 생식세포가 만들어집니다.' },
+      { q: '사람(2n=46)의 생식세포가 가진 염색체 수는?', opts: ['46개', '23개', '92개', '44개'], ans: 1, exp: '감수분열로 생성된 생식세포(정자, 난자)는 n=23개의 염색체를 가집니다.' },
+      { q: '난자 형성 과정의 특징으로 옳은 것은?', opts: ['1개의 모세포에서 4개의 동일한 난자가 만들어진다', '1개의 난자와 3개의 극체가 생성된다', '정자 형성과 동일한 방식으로 진행된다', '체세포 분열로 난자가 형성된다'], ans: 1, exp: '난자 형성: 1차 난모세포 → 2차 난모세포 + 1극체 → 난자 + 2극체. 최종적으로 1개의 난자와 3개의 극체가 생성됩니다.' },
+      { q: '1개의 정원세포에서 최종 생성되는 정자 수는?', opts: ['1개', '2개', '4개', '8개'], ans: 2, exp: '1개의 정원세포(2n) → 1차 정모세포 → 2차 정모세포 2개 → 정세포 4개 → 정자 4개.' },
+      { q: '수정란의 염색체 수는?', opts: ['n', '2n', '4n', '3n'], ans: 1, exp: '수정란은 정자(n)와 난자(n)가 합쳐져 2n의 핵상을 가지게 됩니다(사람: 23+23=46).' },
+      { q: '감수 2분열에서 분리되는 것은?', opts: ['상동 염색체', '염색분체', '뉴클레오솜', '히스톤 단백질'], ans: 1, exp: '감수 2분열에서는 체세포 분열처럼 자매 염색분체가 분리되어 각 딸세포로 이동합니다.' },
+      { q: '감수분열 직전 DNA량이 2배가 되는 시기는?', opts: ['G1기', 'S기(간기)', 'G2기', '감수 1분열 전기'], ans: 1, exp: '감수분열 전 간기의 S기에 DNA가 복제되어 2배가 됩니다.' },
+      { q: '교차(crossing over)가 일어나는 시기와 장소는?', opts: ['감수 2분열 전기, 염색분체 사이', '감수 1분열 전기, 2가 염색체의 비자매 염색분체 사이', '체세포 분열 중기', '감수 1분열 후기'], ans: 1, exp: '교차는 감수 1분열 전기에 2가 염색체의 비자매 염색분체 사이에서 일어나 유전자를 교환합니다.' },
+      { q: '감수분열과 체세포 분열의 공통점은?', opts: ['결과 세포의 핵상이 2n', '분열 전 DNA 복제가 일어남', '4개의 딸세포 생성', '상동 염색체가 분리됨'], ans: 1, exp: '두 분열 모두 분열 전 간기 S기에 DNA 복제가 일어납니다.' },
+      { q: '핵상 2n=6인 생물의 감수분열 결과 딸세포의 염색체 수는?', opts: ['6개', '3개', '12개', '1개'], ans: 1, exp: '2n=6이면 n=3입니다. 감수분열 결과 n=3개의 염색체를 가진 4개의 딸세포가 생성됩니다.' },
+      { q: '독립의 법칙이 성립하는 조건은?', opts: ['두 유전자가 같은 염색체에 있을 때', '두 유전자가 서로 다른 쌍의 상동 염색체에 있을 때', '두 유전자가 X염색체에 있을 때', '두 유전자가 연관되어 있을 때'], ans: 1, exp: '독립의 법칙은 두 쌍의 대립 유전자가 서로 다른 상동 염색체에 있을 때 각각 독립적으로 분리·배분되는 것입니다.' },
+      { q: '사람의 정자에 X염색체가 있을 확률은?', opts: ['0%', '25%', '50%', '100%'], ans: 2, exp: '남성은 XY 성염색체를 가지므로 감수분열 결과 X 정자 50%, Y 정자 50%가 생성됩니다.' },
+      { q: '감수 1분열 전기에서 관찰되는 현상은?', opts: ['핵막 소실만 일어남', '상동 염색체 접합(시냅시스)과 2가 염색체 형성', '염색분체 분리', '세포판 형성'], ans: 1, exp: '감수 1분열 전기에 상동 염색체가 접합하여 2가 염색체(4분 염색체)를 형성하고, 교차가 일어납니다.' },
+      { q: '체세포 분열 후기와 감수 1분열 후기의 차이는?', opts: ['체세포 분열 후기: 염색분체 분리, 감수 1분열 후기: 상동 염색체 분리', '체세포 분열 후기: 상동 염색체 분리, 감수 1분열 후기: 염색분체 분리', '두 분열 모두 후기에 염색분체가 분리됨', '차이 없음'], ans: 0, exp: '체세포 분열 후기: 자매 염색분체 분리. 감수 1분열 후기: 상동 염색체 분리.' },
+      { q: '감수분열로 생식세포가 형성되는 이유는?', opts: ['세포를 더 많이 만들기 위해', '수정 시 자손의 염색체 수가 부모와 같게 유지되도록', '유전 정보를 2배로 늘리기 위해', '돌연변이를 줄이기 위해'], ans: 1, exp: '감수분열로 n의 생식세포가 만들어지면, 수정 시 n+n=2n이 되어 종 고유의 염색체 수가 세대를 거쳐도 유지됩니다.' }
+    ]
+  },
+  {
+    id: 10, name: '사람의 유전', short: '10단원',
+    questions: [
+      { q: 'ABO식 혈액형에서 혈액형이 A형인 유전자형은?', opts: ['IAIB만', 'IAIA 또는 IAi', 'ii만', 'IBIB만'], ans: 1, exp: 'A형의 유전자형은 IAIA(동형접합) 또는 IAi(이형접합)입니다.' },
+      { q: '멘델의 분리의 법칙이란?', opts: ['두 쌍의 형질이 독립적으로 유전된다', '한 쌍의 대립 유전자가 생식세포 형성 시 분리되어 각각 다른 생식세포로 들어간다', '우성 형질만 자손에 나타난다', '형질은 반드시 양쪽 부모로부터 동등하게 유전된다'], ans: 1, exp: '분리의 법칙: 쌍을 이루는 대립 유전자는 생식세포 형성 시(감수분열) 분리되어 각각 다른 생식세포로 들어갑니다.' },
+      { q: '반성 유전이란?', opts: ['부모 중 한쪽만 형질이 나타나는 유전', 'X염색체에 유전자가 있어 성별에 따라 발현 빈도가 다른 유전', '열성 유전자가 발현되는 유전', '상염색체 연관 유전'], ans: 1, exp: '반성 유전은 X염색체에 유전자가 있어 남녀에서 발현 빈도가 다릅니다. 색맹, 혈우병이 대표적입니다.' },
+      { q: '어머니가 색맹 보인자(XAXa), 아버지가 정상(XAY)일 때 아들 중 색맹 비율은?', opts: ['0%', '25%', '50%', '100%'], ans: 2, exp: '아들의 유전자형: XAY(정상) 또는 XaY(색맹). 각각 50% 확률입니다.' },
+      { q: 'O형 혈액형의 유전자형은?', opts: ['IAIA', 'IAi', 'IAIB', 'ii'], ans: 3, exp: 'O형은 IA와 IB 대립 유전자가 없는 ii 유전자형입니다.' },
+      { q: '우성과 열성의 정의로 옳은 것은?', opts: ['우성은 항상 좋은 형질이다', '이형접합(Aa)에서 나타나는 형질이 우성, 나타나지 않는 형질이 열성', '열성은 자손에 절대 나타나지 않는다', '우성과 열성은 성별에 따라 다르다'], ans: 1, exp: '우성은 이형접합자(Aa)에서 표현되는 형질이고, 열성은 aa에서만 표현됩니다.' },
+      { q: 'Aa × Aa 교배 시 자손에서 열성(aa) 비율은?', opts: ['1/4', '1/2', '3/4', '0'], ans: 0, exp: 'Aa × Aa: AA(1/4), Aa(2/4), aa(1/4). 열성 aa의 비율은 1/4(25%)입니다.' },
+      { q: '부모가 모두 A형(IAi)일 때 자녀가 O형(ii)일 확률은?', opts: ['0%', '25%', '50%', '75%'], ans: 1, exp: 'IAi × IAi: IAIA(1/4), IAi(2/4), ii(1/4). O형(ii)이 나올 확률은 1/4(25%)입니다.' },
+      { q: '가계도에서 부모가 정상인데 자녀에 환자가 있으면 해당 질환은?', opts: ['우성 유전', '열성 유전', '반성 유전', '공우성'], ans: 1, exp: '부모가 모두 정상이지만 자녀에 환자가 있으면 부모는 보인자(Aa)이고 해당 질환은 열성 유전입니다.' },
+      { q: '혈우병에 대한 설명으로 옳은 것은?', opts: ['상염색체 우성 유전', 'X염색체 열성 유전으로 주로 남성에서 발현', 'Y염색체에 유전자가 있음', '여성에서만 발현'], ans: 1, exp: '혈우병은 X염색체 열성 유전으로, 남성은 XhY이면 발현되고 여성은 XhXh이어야 발현됩니다.' },
+      { q: 'AaBb × AaBb 교배에서 A_B_(우성우성) 비율은?', opts: ['1/4', '3/4', '9/16', '1/16'], ans: 2, exp: 'AaBb × AaBb: A_(3/4) × B_(3/4) = 9/16. 독립 법칙이 성립할 때입니다.' },
+      { q: 'AB형 혈액형의 유전자형과 특성은?', opts: ['ii, 공우성', 'IAIB, 공우성(두 대립 유전자 모두 발현)', 'IAi, 우성 발현', 'IAIA, 동형 우성'], ans: 1, exp: 'AB형은 IAIB 유전자형으로 IA와 IB가 공우성 관계이므로 두 항원이 모두 발현됩니다.' },
+      { q: '표현형이 같아도 유전자형이 다를 수 있는 예는?', opts: ['O형(ii)과 O형(ii)', 'A형(IAIA)과 A형(IAi)', 'AB형(IAIB)과 AB형(IAIB)', 'B형(IBi)과 O형(ii)'], ans: 1, exp: 'A형 혈액형은 IAIA와 IAi 두 가지 유전자형이 있으며 표현형(A형)은 같습니다.' },
+      { q: '복대립 유전의 예로 옳은 것은?', opts: ['색맹 유전', 'ABO식 혈액형', '혈우병', '알비노(색소 결핍)'], ans: 1, exp: 'ABO식 혈액형은 IA, IB, i의 3가지 대립 유전자가 존재하는 복대립 유전의 대표적인 예입니다.' },
+      { q: '유전자형 Aa에서 A와 a는 어떤 관계인가?', opts: ['상동 유전자', '대립 유전자', '연관 유전자', '보인자 유전자'], ans: 1, exp: 'A와 a는 상동 염색체의 같은 위치에 있는 대립 유전자(allele)입니다.' },
+      { q: 'X 염색체 열성 유전에서 딸이 환자가 되려면?', opts: ['아버지만 환자이면 됨', '어머니만 보인자이면 됨', '아버지가 환자이고 어머니가 보인자 또는 환자여야 함', '아버지가 정상이면 됨'], ans: 2, exp: '딸의 X염색체는 아버지와 어머니 양쪽에서 받으므로, 아버지 환자 + 어머니 보인자 이상이어야 합니다.' },
+      { q: '멘델 실험에서 사용한 형질 중 하나로 옳은 것은?', opts: ['잎의 색', '꽃의 색(자주색 vs 흰색)', '뿌리 길이', '씨앗 수'], ans: 1, exp: '멘델이 사용한 7가지 형질 중 하나로 꽃 색깔(자주색 vs 흰색)이 있습니다.' },
+      { q: '열성 형질이 표현되기 위한 유전자형은?', opts: ['AA', 'Aa', 'aa', 'Aa 또는 aa'], ans: 2, exp: '열성 형질은 대립 유전자가 모두 열성인 동형접합 열성(aa)에서만 표현됩니다.' },
+      { q: '보인자(carrier)의 정의는?', opts: ['두 대립 유전자가 모두 우성인 개체', '열성 유전자를 가지고 있지만 표현형은 정상인 이형접합자(Aa)', '환자와 같은 표현형을 가진 개체', '우성 유전자만 가진 개체'], ans: 1, exp: '보인자는 열성 유전 질환의 유전자를 가지나(이형접합, Aa) 표현형은 정상인 개체로, 다음 세대에 형질을 전달할 수 있습니다.' },
+      { q: '부모가 B형(IBi) × A형(IAi)일 때 나올 수 있는 혈액형이 아닌 것은?', opts: ['A형', 'B형', 'AB형', 'AA형'], ans: 3, exp: 'IBi × IAi: IAIB(AB형), IAi(A형), IBi(B형), ii(O형). 4가지 혈액형 모두 가능합니다.' }
+    ]
+  },
+  {
+    id: 11, name: '염색체 이상과 유전자 이상', short: '11단원',
+    questions: [
+      { q: '다운 증후군의 핵형은?', opts: ['44+X (45개)', '21번 삼염색체, 총 47개', '45+XX (47개)', '44+XX (46개)'], ans: 1, exp: '다운 증후군은 21번 염색체가 3개(삼염색체성)이므로 총 47개의 염색체를 가집니다.' },
+      { q: '터너 증후군의 특징으로 옳은 것은?', opts: ['성염색체가 XXY (47개)', '성염색체가 X 하나만(45개), 표현형 여성, 불임', '21번 삼염색체', '성염색체 XYY'], ans: 1, exp: '터너 증후군: 44+X = 45개 염색체, 외관상 여성이나 난소 발달 불완전, 불임.' },
+      { q: '클라이펠터 증후군의 핵형과 특징은?', opts: ['44+X, 여성 불임', '44+XXY, 외관상 남성 불임', '45+XX, 발달 이상', '44+XY, 정상'], ans: 1, exp: '클라이펠터 증후군: 44+XXY = 47개 염색체, 외관상 남성이나 정소 발달 불완전, 불임.' },
+      { q: '낫 모양 적혈구 빈혈증의 원인으로 옳은 것은?', opts: ['21번 염색체가 1개 부족', '베타 글로빈 유전자의 염기 하나가 치환된 유전자 돌연변이', '성염색체 비분리', '7번 염색체 일부 결실'], ans: 1, exp: '낫 모양 적혈구 빈혈증은 베타 글로빈 유전자의 염기 하나가 치환되는 유전자 돌연변이로 발생합니다.' },
+      { q: '염색체 비분리에 의해 나타나는 돌연변이는?', opts: ['유전자 돌연변이', '이수성 돌연변이', 'X 연관 유전', '복대립 유전'], ans: 1, exp: '염색체 비분리는 감수 분열 시 상동 염색체 또는 염색 분체가 정상적으로 분리되지 않아 이수성 돌연변이를 유발합니다.' },
+      { q: '유전자 돌연변이의 원인으로 옳지 않은 것은?', opts: ['자외선 노출', 'X선 방사선', '염색체 비분리', '화학 물질(돌연변이 유발원)'], ans: 2, exp: '염색체 비분리는 염색체 수 이상을 일으키는 것으로 유전자 돌연변이와는 구별됩니다.' },
+      { q: '페닐케톤뇨증(PKU)에 대한 설명으로 옳은 것은?', opts: ['성염색체 열성 유전으로 남성에만 발현', '상염색체 열성 유전으로 페닐알라닌 분해 효소 결핍', '21번 삼염색체성으로 발생', '염색체 구조 이상으로 발생'], ans: 1, exp: '페닐케톤뇨증은 상염색체 열성 유전으로, 페닐알라닌 하이드록실라아제 효소 결핍으로 페닐알라닌이 축적되어 지적 장애를 유발합니다.' },
+      { q: '염색체 구조 이상 중 "전좌(translocation)"는?', opts: ['염색체 일부가 없어진다', '염색체 일부가 반복된다', '염색체 일부가 다른 염색체로 이동한다', '염색체 일부가 거꾸로 뒤집힌다'], ans: 2, exp: '전좌는 한 염색체의 일부가 떨어져 다른(비상동) 염색체에 붙는 구조 이상입니다.' },
+      { q: '염색체 구조 이상의 종류가 아닌 것은?', opts: ['결실', '중복', '역위', '비분리'], ans: 3, exp: '염색체 구조 이상: 결실, 중복, 역위, 전좌. 비분리는 수 이상입니다.' },
+      { q: '감수 1분열에서 비분리가 일어났을 때 생성되는 비정상 생식세포는?', opts: ['n+1개인 세포와 n-1개인 세포가 생성됨', '모든 세포가 2n', '염색체 수가 2n+1인 세포만 생성됨', '변화 없음'], ans: 0, exp: '감수 1분열 비분리: 상동 염색체가 분리 안 되면 n+1 생식세포와 n-1 생식세포가 생성됩니다.' },
+      { q: '염색체 수 이상의 원인이 되는 것은?', opts: ['자외선에 의한 DNA 손상', '방사선에 의한 염기 변화', '감수분열 시 염색체 비분리', '화학물질에 의한 염기 치환'], ans: 2, exp: '염색체 수 이상(이수성)은 감수분열 또는 체세포 분열 시 염색체 비분리로 발생합니다.' },
+      { q: '21번 삼염색체성 발생 가능성이 높아지는 경우는?', opts: ['아버지의 나이가 많을수록', '어머니의 나이가 많을수록', '방사선에 노출된 아버지', '형제자매가 많을수록'], ans: 1, exp: '다운 증후군은 어머니의 나이가 많을수록 발생 위험이 높아집니다.' },
+      { q: '겸상 적혈구 빈혈증의 유전 방식은?', opts: ['X염색체 우성 유전', '상염색체 열성 유전', 'Y염색체 유전', '상염색체 우성 유전'], ans: 1, exp: '겸상 적혈구 빈혈증은 상염색체 열성 유전으로, 동형접합 열성(aa)일 때 발병합니다.' },
+      { q: '염색체 결실(deletion)이란?', opts: ['염색체의 일부가 다른 위치로 이동', '염색체의 일부 부분이 없어진 구조 이상', '상동 염색체가 분리되지 않음', '염색체의 일부가 두 번 반복'], ans: 1, exp: '결실은 염색체의 특정 부분이 없어진 구조 이상입니다.' },
+      { q: '고양이 울음 증후군(Cri du chat)의 원인은?', opts: ['21번 삼염색체', '5번 염색체 단완 결실', 'X염색체 결실', '22번 전좌'], ans: 1, exp: '고양이 울음 증후군은 5번 염색체의 짧은 팔(단완)의 일부가 결실되어 발생합니다.' },
+      { q: '이수성(aneuploidy)이란?', opts: ['염색체 수가 배수로 증가한 것', '정상보다 염색체 수가 많거나 적은 것', '유전자 염기 서열이 바뀐 것', '염색체 구조의 일부가 변화한 것'], ans: 1, exp: '이수성은 정상 2n에서 염색체 하나 이상이 더 있거나(삼염색체성) 없는(단염색체성) 상태입니다.' },
+      { q: '유전자 돌연변이 중 "삽입(insertion)"이 일어났을 때의 영향은?', opts: ['해당 코돈의 아미노산만 변함', '이후 모든 코돈이 밀려 읽히는 틀이동 돌연변이', '단백질 합성에 영향이 없다', '염색체 수가 변한다'], ans: 1, exp: '염기 삽입은 읽기 틀(reading frame)을 바꾸어 그 이후 모든 아미노산이 달라지는 틀이동 돌연변이(frameshift)를 일으킵니다.' },
+      { q: '터너 증후군 여성에게 나타나는 특징으로 옳은 것은?', opts: ['키가 매우 크다', '난소 발달 불완전으로 2차 성징 미발달 및 불임', 'XXY 핵형', '지적 장애가 반드시 나타남'], ans: 1, exp: '터너 증후군(44+X): 외관상 여성, 키가 작음, 난소 발달 불완전, 2차 성징 미발달, 불임이 특징입니다.' },
+      { q: '중복(duplication)의 정의는?', opts: ['염색체의 일부가 사라짐', '염색체의 일부가 두 번 반복됨', '염색체가 다른 염색체로 이동', '유전자 하나만 변화'], ans: 1, exp: '중복은 염색체의 특정 구간이 두 번 이상 반복되는 구조 이상입니다.' },
+      { q: '알비노증(백색증)의 유전 방식은?', opts: ['X염색체 열성 유전', '상염색체 우성 유전', '상염색체 열성 유전', 'Y염색체 연관 유전'], ans: 2, exp: '알비노증은 상염색체 열성 유전으로, 멜라닌 합성 효소 유전자 이상으로 멜라닌이 생성되지 않습니다.' }
+    ]
+  }
+];
+
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+let selectedUnits = [];
+let quizQuestions = [];
+let currentIdx = 0;
+let score = 0;
+let answered = false;
+let timerInterval = null;
+let timeLeft = 30;
+let totalTime = 0;
+let startTime = null;
+let wrongAnswers = [];
+let selectedForRetry = [];
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+function init() {
+  const grid = document.getElementById('unit-grid');
+  grid.innerHTML = '';
+  UNITS.forEach(unit => {
+    const card = document.createElement('div');
+    card.className = 'unit-card';
+    card.dataset.id = unit.id;
+    card.innerHTML = `
+      <div class="unit-num">${unit.short}</div>
+      <div class="unit-name">${unit.name}</div>
+      <div class="unit-count">문제 ${unit.questions.length}개</div>
+      <div class="unit-check">✓</div>
+    `;
+    card.addEventListener('click', () => toggleUnit(unit.id));
+    grid.appendChild(card);
+  });
+}
+
+function toggleUnit(id) {
+  const idx = selectedUnits.indexOf(id);
+  if (idx > -1) {
+    selectedUnits.splice(idx, 1);
+  } else {
+    selectedUnits.push(id);
+  }
+  updateUnitUI();
+}
+
+function selectAll() {
+  selectedUnits = UNITS.map(u => u.id);
+  updateUnitUI();
+}
+
+function clearAll() {
+  selectedUnits = [];
+  updateUnitUI();
+}
+
+function updateUnitUI() {
+  document.querySelectorAll('.unit-card').forEach(card => {
+    const id = parseInt(card.dataset.id);
+    card.classList.toggle('selected', selectedUnits.includes(id));
+  });
+  document.getElementById('start-btn').disabled = selectedUnits.length === 0;
+}
+
+// ══════════════════════════════════════════
+//  QUIZ
+// ══════════════════════════════════════════
+function startQuiz() {
+  selectedForRetry = [...selectedUnits];
+  quizQuestions = [];
+  selectedUnits.forEach(uid => {
+    const unit = UNITS.find(u => u.id === uid);
+    if (unit) {
+      unit.questions.forEach(q => {
+        quizQuestions.push({ ...q, unitName: unit.name });
+      });
+    }
+  });
+  // shuffle
+  quizQuestions = quizQuestions.sort(() => Math.random() - 0.5);
+
+  currentIdx = 0;
+  score = 0;
+  wrongAnswers = [];
+  totalTime = 0;
+  startTime = Date.now();
+
+  showView('quiz');
+  document.getElementById('q-total').textContent = quizQuestions.length;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = quizQuestions[currentIdx];
+  answered = false;
+
+  document.getElementById('q-current').textContent = currentIdx + 1;
+  document.getElementById('progress-fill').style.width =
+    ((currentIdx / quizQuestions.length) * 100) + '%';
+  document.getElementById('q-unit-tag').textContent = q.unitName;
+  document.getElementById('q-text').textContent = q.q;
+
+  const list = document.getElementById('options-list');
+  list.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-num">${i + 1}</span><span>${opt}</span>`;
+    btn.addEventListener('click', () => selectAnswer(i));
+    list.appendChild(btn);
+  });
+
+  document.getElementById('explain-box').classList.remove('show');
+  document.getElementById('btn-next').classList.remove('show');
+
+  // timer
+  clearInterval(timerInterval);
+  timeLeft = 30;
+  updateTimer();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimer();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      if (!answered) autoFail();
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const el = document.getElementById('timer-display');
+  const badge = document.getElementById('timer-badge');
+  el.textContent = timeLeft;
+  badge.classList.toggle('warning', timeLeft <= 10);
+}
+
+function autoFail() {
+  const q = quizQuestions[currentIdx];
+  answered = true;
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach((btn, i) => {
+    if (i === q.ans) btn.classList.add('correct');
+    else btn.classList.add('neutral');
+  });
+  wrongAnswers.push({ q: q.q, yourAns: '시간 초과', correctAns: q.opts[q.ans], exp: q.exp });
+  showExplain(q.exp);
+  document.getElementById('btn-next').classList.add('show');
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+
+  const q = quizQuestions[currentIdx];
+  const btns = document.querySelectorAll('.option-btn');
+
+  btns.forEach((btn, i) => {
+    if (i === q.ans) btn.classList.add('correct');
+    else if (i === idx && idx !== q.ans) btn.classList.add('wrong');
+    else btn.classList.add('neutral');
+  });
+
+  if (idx === q.ans) {
+    score++;
+    document.body.classList.add('flash-correct');
+    setTimeout(() => document.body.classList.remove('flash-correct'), 500);
+  } else {
+    wrongAnswers.push({
+      q: q.q,
+      yourAns: q.opts[idx],
+      correctAns: q.opts[q.ans],
+      exp: q.exp
+    });
+    document.body.classList.add('flash-wrong');
+    setTimeout(() => document.body.classList.remove('flash-wrong'), 500);
+  }
+
+  showExplain(q.exp);
+  document.getElementById('btn-next').classList.add('show');
+}
+
+function showExplain(text) {
+  const box = document.getElementById('explain-box');
+  document.getElementById('explain-text').textContent = text;
+  box.classList.add('show');
+}
+
+function nextQuestion() {
+  currentIdx++;
+  if (currentIdx >= quizQuestions.length) {
+    showResult();
+  } else {
+    document.getElementById('btn-next').classList.remove('show');
+    document.getElementById('explain-box').classList.remove('show');
+    renderQuestion();
+  }
+}
+
+// ══════════════════════════════════════════
+//  RESULT
+// ══════════════════════════════════════════
+function showResult() {
+  clearInterval(timerInterval);
+  totalTime = Math.round((Date.now() - startTime) / 1000);
+
+  const total = quizQuestions.length;
+  const pct = Math.round((score / total) * 100);
+
+  document.getElementById('result-score').textContent = pct + '점';
+
+  let label, sub;
+  if (pct >= 90) { label = '🎉 완벽해요!'; sub = '생명과학 마스터 달성!'; }
+  else if (pct >= 70) { label = '👍 잘했어요!'; sub = '조금만 더 공부하면 완벽합니다.'; }
+  else if (pct >= 50) { label = '📖 열심히 해요!'; sub = '취약 단원을 다시 공부해보세요.'; }
+  else { label = '💪 다시 도전!'; sub = '요점정리를 읽고 다시 풀어보세요.'; }
+
+  document.getElementById('result-label').textContent = label;
+  document.getElementById('result-sub').textContent = sub;
+  document.getElementById('res-correct').textContent = score;
+  document.getElementById('res-wrong').textContent = total - score;
+  document.getElementById('res-time').textContent = totalTime + 's';
+
+  // wrong review
+  const section = document.getElementById('review-section');
+  if (wrongAnswers.length > 0) {
+    let html = '<div class="review-title">오답 노트</div>';
+    wrongAnswers.forEach(w => {
+      html += `
+        <div class="review-item">
+          <div class="review-item-q">${w.q}</div>
+          <div class="review-item-row">
+            <span class="ri-wrong">✗ ${w.yourAns}</span>
+            <span class="ri-correct">✓ ${w.correctAns}</span>
+          </div>
+          <div style="font-size:13px;color:var(--text-muted);margin-top:8px;line-height:1.6;">${w.exp}</div>
+        </div>
+      `;
+    });
+    section.innerHTML = html;
+  } else {
+    section.innerHTML = '<div class="review-title">오답 없음 — 완벽한 풀이!</div>';
+  }
+
+  showView('result');
+  document.getElementById('progress-fill').style.width = '100%';
+}
+
+function retryQuiz() {
+  selectedUnits = [...selectedForRetry];
+  startQuiz();
+}
+
+function goHome() {
+  clearInterval(timerInterval);
+  showView('home');
+}
+
+// ══════════════════════════════════════════
+//  UTIL
+// ══════════════════════════════════════════
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Start
+init();
+</script>
+</body>
+</html>
